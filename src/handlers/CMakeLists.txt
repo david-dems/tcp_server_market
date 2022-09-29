@@ -1,0 +1,3 @@
+SET(HANDLER_SOURCE
+    ${CMAKE_CURRENT_SOURCE_DIR}/abstract_handler.cpp
+)
