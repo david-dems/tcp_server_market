@@ -4,24 +4,16 @@
 std::string RegHandler::makeReply(nlohmann::json j){
     auto C = DataBase::getDB()->Pool().getConnection();
     std::string query;
-    query  = "BEGIN ISOLATION LEVEL READ COMMITTED; ";
-    query += "insert into Users (firstname, lastname, login, password) ";
-    query += "values ('";
-    query += j["Message"];
-    query += "', 'asdfg', 'login', 'qwertylogin');";
-    query += "COMMIT; \0";
     
+    boost::format fmt_insert = boost::format(insert_query_template) % j["Message"] % j["Message"] % j["Message"] % j["Message"];
+    query = fmt_insert.str();
     PQsendQuery(C->connection().get(), query.c_str());
     
     while(auto res = PQgetResult(C->connection().get()));
 
-    query  = "BEGIN ISOLATION LEVEL READ COMMITTED; ";
-    query += "select userID from Users ";
-    query += "where firstname = \'";
-    query += j["Message"];
-    query += "\';";
-    query += "COMMIT; ";
 
+    boost::format fmt_id = boost::format(id_query_template) % j["Message"];
+    query = fmt_id.str();
     PQsendQuery(C->connection().get(), query.c_str());
 
     char *ID;

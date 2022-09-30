@@ -7,6 +7,9 @@
 #include "HandlerFactory.h"
 #include "RegisterHandler.h"
 #include "HelloHandler.h"
+#include "OrderHandler.h"
+#include "ActiveOrdersHandler.h"
+#include "BalanceHandler.h"
 
 using boost::asio::ip::tcp;
 
@@ -56,6 +59,8 @@ public:
         handlerFactory.addHandler<HelHandler>("HelHandler");
         handlerFactory.addHandler<RegHandler>("RegHandler");
         handlerFactory.addHandler<OrderHandler>("OrderHandler");
+        handlerFactory.addHandler<ActiveOrderHandler>("ActiveOrderHandler");
+        handlerFactory.addHandler<BalanceHandler>("BalanceHandler");
     }
 
     tcp::socket& socket()
@@ -82,12 +87,11 @@ public:
             // Парсим json, который пришёл нам в сообщении.
             auto j = nlohmann::json::parse(data_);
             std::string reqType = j["ReqType"];
-            
+           
+            //Создаем необходимый для обработки реквеста колбэк 
             RequestHandler *h = handlerFactory.make(reqType + "Handler");
-
             std::string reply = h->makeReply(j);
-
-            delete h;
+            delete h; // после использования нужно удалить хендлер из-за new в фабрике
             
             
             boost::asio::async_write(socket_,

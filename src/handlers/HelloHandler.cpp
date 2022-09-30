@@ -4,13 +4,10 @@
 std::string HelHandler::makeReply(nlohmann::json j){
     auto C = DataBase::getDB()->Pool().getConnection();
     std::string query;
-
-    query = "select firstname from Users ";
-    query += "where userid = ";
-    query += j["UserId"];
-    query += ";";
-
-
+    
+    boost::format fmt = boost::format(hello_query_template) % j["UserId"].get<std::string>();
+    query = fmt.str();
+    std::cout << query << std::endl;
     PQsendQuery(C->connection().get(), query.c_str());
 
     char *ID;

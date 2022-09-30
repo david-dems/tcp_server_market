@@ -3,18 +3,14 @@
 
 std::string OrderHandler::makeReply(nlohmann::json j){
     //Check if the user in DB
-    std::string query1;
 
     auto C = DataBase::getDB()->Pool().getConnection();
 
-    query1  = "BEGIN ISOLATION LEVEL READ COMMITTED; ";
-    query1 += "select count(userID) from Users ";
-    query1 += "where userID = \'";
-    query1 += j["UserId"];
-    query1 += "\';";
-    query1 += "COMMIT; ";
+    std::string query;
+    auto fmt = boost::format(query_template_check_user) % j["UserId"].get<std::string>(); 
+    query = fmt.str();
 
-    PQsendQuery(C->connection().get(), query1.c_str());
+    PQsendQuery(C->connection().get(), query.c_str());
 
     char *count;
 
@@ -34,8 +30,10 @@ std::string OrderHandler::makeReply(nlohmann::json j){
         return "This user is not registred";
 
     std::string reply = "Order has been published!";
-    boost::format fmt = boost::format(query_template) % j["userid"] % j["vol"] % j["price"] % j["direction"] % j["status"] % "CURRENT_TIMESTMP";
-    std::string query = fmt.str();
+    fmt = boost::format(query_template) % j["UserId"] % j["vol"] % j["price"] % j["direction"] % j["status"] % "CURRENT_TIMESTMP";
+
+    query = fmt.str();
+
     PQsendQuery(C->connection().get(), query.c_str());
     while(auto res = PQgetResult(C->connection().get())){
         if (PQresultStatus(res) == PGRES_FATAL_ERROR){
