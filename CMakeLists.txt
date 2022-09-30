@@ -12,6 +12,7 @@ INCLUDE_DIRECTORIES(
     ${PostgreSQL_INCLUDE_DIRS}
     ./include 
     ./include/postgres
+    ./include/handlers
     )
 
 SET(CMAKE_CXX_STANDARD 17)
@@ -21,6 +22,7 @@ ADD_EXECUTABLE(Client "")
 
 ADD_SUBDIRECTORY(./src)
 ADD_SUBDIRECTORY(./src/postgres)
+ADD_SUBDIRECTORY(./src/handlers)
 
 TARGET_LINK_LIBRARIES(Server PRIVATE Threads::Threads ${Boost_LIBRARIES})
 TARGET_LINK_LIBRARIES(Server PRIVATE ${PostgreSQL_LIBRARIES})

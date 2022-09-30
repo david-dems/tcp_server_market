@@ -4,6 +4,7 @@
 #include <boost/asio.hpp>
 #include "json.hpp"
 #include "Common.hpp"
+#include "HandlerFactory.h"
 
 using boost::asio::ip::tcp;
 

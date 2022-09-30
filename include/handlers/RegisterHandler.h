@@ -2,8 +2,8 @@
 
 #include <string>
 #include <json.hpp>
-#include "abstract_handler.h"
+#include "RequestHandler.h"
 
-class RegisterHandler : public AbstractHandler{
-    virtual std::string makeReply(nlohhman::json j);
+class RegisterHandler : public RequestHandler{
+    std::string makeReply(nlohmann::json j);
 };

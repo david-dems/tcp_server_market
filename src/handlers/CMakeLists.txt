@@ -1,3 +1,5 @@
 SET(HANDLER_SOURCE
-    ${CMAKE_CURRENT_SOURCE_DIR}/abstract_handler.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/RegisterHandler.cpp
 )
+
+TARGET_SOURCES(Server PUBLIC ${HANDLER_SOURCE})
