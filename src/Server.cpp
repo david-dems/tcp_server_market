@@ -55,6 +55,7 @@ public:
     {
         handlerFactory.addHandler<HelHandler>("HelHandler");
         handlerFactory.addHandler<RegHandler>("RegHandler");
+        handlerFactory.addHandler<OrderHandler>("OrderHandler");
     }
 
     tcp::socket& socket()

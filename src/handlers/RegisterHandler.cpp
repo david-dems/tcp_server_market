@@ -4,19 +4,23 @@
 std::string RegHandler::makeReply(nlohmann::json j){
     auto C = DataBase::getDB()->Pool().getConnection();
     std::string query;
-    query  = "insert into Users (firstname, lastname, login, password) ";
+    query  = "BEGIN ISOLATION LEVEL READ COMMITTED; ";
+    query += "insert into Users (firstname, lastname, login, password) ";
     query += "values ('";
     query += j["Message"];
     query += "', 'asdfg', 'login', 'qwertylogin');";
+    query += "COMMIT; \0";
     
     PQsendQuery(C->connection().get(), query.c_str());
     
     while(auto res = PQgetResult(C->connection().get()));
 
-    query = "select userID from Users ";
+    query  = "BEGIN ISOLATION LEVEL READ COMMITTED; ";
+    query += "select userID from Users ";
     query += "where firstname = \'";
     query += j["Message"];
     query += "\';";
+    query += "COMMIT; ";
 
     PQsendQuery(C->connection().get(), query.c_str());
 
