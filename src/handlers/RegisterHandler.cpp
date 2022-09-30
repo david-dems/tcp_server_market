@@ -33,7 +33,9 @@ std::string RegHandler::makeReply(nlohmann::json j){
 
     DataBase::getDB()->Pool().freeConnection(C);
     
-    std::string reply(ID);
+    std::string reply_string(ID);
+    nlohmann::json reply;
+    reply["UserId"] = reply_string; 
 
-    return reply;
+    return reply.dump();
 }

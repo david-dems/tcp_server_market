@@ -1,4 +1,6 @@
 #include <iostream>
+#include <string>
+#include <vector>
 #include <boost/asio.hpp>
 
 #include "Common.hpp"
@@ -6,30 +8,48 @@
 
 using boost::asio::ip::tcp;
 
-// Отправка сообщения на сервер по шаблону.
-void SendMessage(
+
+void SendOrder(
     tcp::socket& aSocket,
     const std::string& aId,
     const std::string& aRequestType,
-    const std::string& aMessage)
+    int vol,
+    int price,
+    const std::string& dir)
 {
     nlohmann::json req;
     req["UserId"] = aId;
     req["ReqType"] = aRequestType;
-    req["Message"] = aMessage;
+    req["vol"] = vol;
+    req["price"] = price;
+    req["direction"] = dir;
 
     std::string request = req.dump();
     boost::asio::write(aSocket, boost::asio::buffer(request, request.size()));
 }
 
+
+
+
+// Отправка сообщения на сервер по шаблону.
+void SendMessage(
+    tcp::socket& aSocket,
+    nlohmann::json &j
+)
+{
+    std::string request = j.dump();
+    boost::asio::write(aSocket, boost::asio::buffer(request, request.size()));
+}
+
 // Возвращает строку с ответом сервера на последний запрос.
-std::string ReadMessage(tcp::socket& aSocket)
+nlohmann::json ReadMessage(tcp::socket& aSocket)
 {
     boost::asio::streambuf b;
     boost::asio::read_until(aSocket, b, "\0");
     std::istream is(&b);
     std::string line(std::istreambuf_iterator<char>(is), {});
-    return line;
+    auto j = nlohmann::json::parse(line);
+    return j;
 }
 
 // "Создаём" пользователя, получаем его ID.
@@ -39,9 +59,15 @@ std::string ProcessRegistration(tcp::socket& aSocket)
     std::cout << "Hello! Enter your name: ";
     std::cin >> name;
 
+    nlohmann::json j;
+    j["UserId"] = "0";
+    j["ReqType"] = Requests::Registration;
+    j["Message"] = name;
+
     // Для регистрации Id не нужен, заполним его нулём
-    SendMessage(aSocket, "0", Requests::Registration, name);
-    return ReadMessage(aSocket);
+    SendMessage(aSocket, j);
+    auto rep = ReadMessage(aSocket);
+    return rep["UserId"].get<std::string>();
 }
 
 int main()
@@ -68,6 +94,8 @@ int main()
             std::cout << "Menu:\n"
                          "1) Hello Request\n"
                          "2) Exit\n"
+                         "3) Make Order\n"
+                         "4) Show balance\n"
                          << std::endl;
 
             short menu_option_num;
@@ -80,14 +108,52 @@ int main()
                     // реализован один единственный метод - Hello.
                     // Этот метод получает от сервера приветствие с именем клиента,
                     // отправляя серверу id, полученный при регистрации.
-                    SendMessage(s, my_id, Requests::Hello, "");
-                    std::cout << ReadMessage(s);
+                    nlohmann::json req;
+                    req["UserId"] = my_id;
+                    req["ReqType"] = Requests::Hello;
+                    SendMessage(s, req);
+                    auto rep = ReadMessage(s);
+                    std::cout << rep["Name"].get<std::string>() << std::endl;
                     break;
                 }
                 case 2:
                 {
                     exit(0);
                     break;
+                }
+                case 3:
+                {
+                    int vol, price;
+                    std::string dir;
+
+                    std::cin >> vol >> price >> dir;
+
+                    nlohmann::json req;
+                    req["UserId"] = my_id;
+                    req["ReqType"] = Requests::Order;
+                    req["vol"] = vol;
+                    req["price"] = price;
+                    req["direction"] = "'" + dir + "'";
+                
+                    SendMessage(s, req);
+                    auto resp = ReadMessage(s);
+                    std::cout << resp["Message"].get<std::string>() << std::endl;
+                    break;
+
+                }
+                case 4:
+                {
+                    nlohmann::json req;
+                    req["UserId"] = my_id;
+                    req["ReqType"] = Requests::Balance;
+                    SendMessage(s, req);
+                    auto resp = ReadMessage(s);
+                    auto usd = resp["USD"].get<std::vector<std::string>>();
+                    auto rub = resp["RUB"].get<std::vector<std::string>>();
+                    for (int i = 0; i < usd.size(); i++){
+                        std::cout << usd[i] << " " << rub[i] << std::endl;
+                    }
+
                 }
                 default:
                 {

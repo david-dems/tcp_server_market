@@ -29,8 +29,8 @@ std::string OrderHandler::makeReply(nlohmann::json j){
     if (count == 0)
         return "This user is not registred";
 
-    std::string reply = "Order has been published!";
-    fmt = boost::format(query_template) % j["UserId"] % j["vol"] % j["price"] % j["direction"] % j["status"] % "CURRENT_TIMESTMP";
+    std::string reply_str = "Order has been published!";
+    fmt = boost::format(query_template) % j["UserId"].get<std::string>() % j["vol"] % j["price"] % j["direction"].get<std::string>() % "'active'" % "CURRENT_TIMESTAMP";
 
     query = fmt.str();
 
@@ -38,12 +38,15 @@ std::string OrderHandler::makeReply(nlohmann::json j){
     while(auto res = PQgetResult(C->connection().get())){
         if (PQresultStatus(res) == PGRES_FATAL_ERROR){
             std::cout<< PQresultErrorMessage(res)<<std::endl;
-            reply = "error";
+            reply_str = "error";
         }
         PQclear(res);
     }
 
     DataBase::getDB()->Pool().freeConnection(C);
 
-    return reply;        
+    nlohmann::json reply;
+    reply["Message"] = reply_str;
+
+    return reply.dump();        
 }

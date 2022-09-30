@@ -27,7 +27,9 @@ std::string HelHandler::makeReply(nlohmann::json j){
 
     DataBase::getDB()->Pool().freeConnection(C);
     
-    std::string reply(ID);
+    nlohmann::json reply;
+    std::string reply_str(ID);
+    reply["Name"] = reply_str;
 
-    return reply;
+    return reply.dump();
 }
