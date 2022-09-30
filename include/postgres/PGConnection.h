@@ -14,12 +14,12 @@ public:
 private:
 
 
-    std::string host;
-    int port;
+    std::string host = "";
+    int port = 5432;
 
-    std::string dbName;
-    std::string usrName;
-    std::string usrPass;
+    std::string dbName = "market";
+    std::string usrName = "";
+    std::string usrPass = "";
 
     std::shared_ptr<PGconn> conn;
 };

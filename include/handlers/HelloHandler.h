@@ -5,7 +5,7 @@
 #include "RequestHandler.h"
 #include "DataBase.h"
 
-class RegHandler : public RequestHandler{
+class HelHandler : public RequestHandler{
     public:
     std::string makeReply(nlohmann::json j);
 };

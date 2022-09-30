@@ -20,7 +20,7 @@ private:
 
 template <typename T>
 void HandlerFactory::addHandler(std::string HandlerName){
-    if(creator_map.find(HandlerName) != creator_map.end())
+    if(creator_map.find(HandlerName) == creator_map.end())
         creator_map[HandlerName] = new TemplateHandlerCreator<T>;
 }
 

@@ -5,6 +5,8 @@
 #include "json.hpp"
 #include "Common.hpp"
 #include "HandlerFactory.h"
+#include "RegisterHandler.h"
+#include "HelloHandler.h"
 
 using boost::asio::ip::tcp;
 
@@ -51,6 +53,8 @@ public:
     session(boost::asio::io_service& io_service)
         : socket_(io_service)
     {
+        handlerFactory.addHandler<HelHandler>("HelHandler");
+        handlerFactory.addHandler<RegHandler>("RegHandler");
     }
 
     tcp::socket& socket()
@@ -76,22 +80,15 @@ public:
 
             // Парсим json, который пришёл нам в сообщении.
             auto j = nlohmann::json::parse(data_);
-            auto reqType = j["ReqType"];
+            std::string reqType = j["ReqType"];
+            
+            RequestHandler *h = handlerFactory.make(reqType + "Handler");
 
-            std::string reply = "Error! Unknown request type";
-            if (reqType == Requests::Registration)
-            {
-                // Это реквест на регистрацию пользователя.
-                // Добавляем нового пользователя и возвращаем его ID.
-                reply = GetCore().RegisterNewUser(j["Message"]);
-            }
-            else if (reqType == Requests::Hello)
-            {
-                // Это реквест на приветствие.
-                // Находим имя пользователя по ID и приветствуем его по имени.
-                reply = "Hello, " + GetCore().GetUserName(j["UserId"]) + "!\n";
-            }
+            std::string reply = h->makeReply(j);
 
+            delete h;
+            
+            
             boost::asio::async_write(socket_,
                 boost::asio::buffer(reply, reply.size()),
                 boost::bind(&session::handle_write, this,
@@ -122,6 +119,7 @@ private:
     tcp::socket socket_;
     enum { max_length = 1024 };
     char data_[max_length];
+    HandlerFactory handlerFactory;
 };
 
 class server

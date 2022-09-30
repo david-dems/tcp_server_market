@@ -1,22 +1,15 @@
-#include "RegisterHandler.h"
+#include "HelloHandler.h"
 #include <iostream>
 
-std::string RegHandler::makeReply(nlohmann::json j){
+std::string HelHandler::makeReply(nlohmann::json j){
     auto C = DataBase::getDB()->Pool().getConnection();
     std::string query;
-    query  = "insert into Users (firstname, lastname, login, password) ";
-    query += "values ('";
-    query += j["Message"];
-    query += "', 'asdfg', 'login', 'qwertylogin');";
-    
-    PQsendQuery(C->connection().get(), query.c_str());
-    
-    while(auto res = PQgetResult(C->connection().get()));
 
-    query = "select userID from Users ";
-    query += "where firstname = \'";
-    query += j["Message"];
-    query += "\';";
+    query = "select firstname from Users ";
+    query += "where userid = ";
+    query += j["UserId"];
+    query += ";";
+
 
     PQsendQuery(C->connection().get(), query.c_str());
 
