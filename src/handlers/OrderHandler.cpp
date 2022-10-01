@@ -30,7 +30,7 @@ std::string OrderHandler::makeReply(nlohmann::json j){
         return "This user is not registred";
 
     std::string reply_str = "Order has been published!";
-    fmt = boost::format(query_template) % j["UserId"].get<std::string>() % j["vol"] % j["price"] % j["direction"].get<std::string>() % "'active'" % "CURRENT_TIMESTAMP";
+    fmt = boost::format(query_template) % j["UserId"].get<std::string>() % j["vol"] % j["price"] % j["direction"].get<std::string>() % "active" % "CURRENT_TIMESTAMP";
 
     query = fmt.str();
 

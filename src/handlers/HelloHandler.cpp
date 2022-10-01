@@ -7,7 +7,6 @@ std::string HelHandler::makeReply(nlohmann::json j){
     
     boost::format fmt = boost::format(hello_query_template) % j["UserId"].get<std::string>();
     query = fmt.str();
-    std::cout << query << std::endl;
     PQsendQuery(C->connection().get(), query.c_str());
 
     char *ID;

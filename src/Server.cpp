@@ -10,6 +10,7 @@
 #include "OrderHandler.h"
 #include "ActiveOrdersHandler.h"
 #include "BalanceHandler.h"
+#include "SignInHandler.h"
 
 using boost::asio::ip::tcp;
 
@@ -61,6 +62,7 @@ public:
         handlerFactory.addHandler<OrderHandler>("OrderHandler");
         handlerFactory.addHandler<ActiveOrderHandler>("ActiveOrderHandler");
         handlerFactory.addHandler<BalanceHandler>("BalanceHandler");
+        handlerFactory.addHandler<SignInHandler>("SignInHandler");
     }
 
     tcp::socket& socket()
