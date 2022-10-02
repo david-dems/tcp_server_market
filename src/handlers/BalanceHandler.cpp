@@ -10,15 +10,13 @@ std::string BalanceHandler::makeReply(nlohmann::json j){
     auto fmt = boost::format(query_template) % j["UserId"].get<std::string>();
     query = fmt.str();
 
-    std::vector<std::string> USD, RUB;
+    std::string USD, RUB;
 
     PQsendQuery(C->connection().get(), query.c_str());
     while(auto res = PQgetResult(C->connection().get())){
         if (PQresultStatus(res) == PGRES_TUPLES_OK && PQntuples(res)) {
-            for (int i = 0; i < PQntuples(res); i++){
-                USD.push_back(PQgetvalue(res, i, 0));
-                RUB.push_back(PQgetvalue(res, i, 1));
-            }
+                USD = PQgetvalue(res, 0, 0);
+                RUB = PQgetvalue(res, 0, 1);
         }
 
         if (PQresultStatus(res) == PGRES_FATAL_ERROR){

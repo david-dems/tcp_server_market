@@ -7,7 +7,7 @@ std::string ActiveOrderHandler::makeReply(nlohmann::json j){
 
     std::string query;
     nlohmann::json reply;
-    auto fmt = boost::format(query_template) % j["userid"].get<std::string>();
+    auto fmt = boost::format(query_template) % j["UserId"].get<std::string>();
     query = fmt.str();
 
     std::vector<std::string> vol, price, direction;

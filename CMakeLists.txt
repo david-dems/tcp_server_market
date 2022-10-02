@@ -5,7 +5,7 @@ SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 
 FIND_PACKAGE(Boost 1.40 COMPONENTS system REQUIRED)
 FIND_PACKAGE(Threads REQUIRED)
-find_package(PostgreSQL REQUIRED)
+FIND_PACKAGE(PostgreSQL REQUIRED)
 
 INCLUDE_DIRECTORIES(
     ${Boost_INCLUDE_DIR}
@@ -13,18 +13,22 @@ INCLUDE_DIRECTORIES(
     ./include 
     ./include/postgres
     ./include/handlers
+    ./include/client
     )
 
 SET(CMAKE_CXX_STANDARD 17)
 
 ADD_EXECUTABLE(Server "")
 ADD_EXECUTABLE(Client "")
+ADD_EXECUTABLE(client "")
 
 ADD_SUBDIRECTORY(./src)
 ADD_SUBDIRECTORY(./src/postgres)
 ADD_SUBDIRECTORY(./src/handlers)
+ADD_SUBDIRECTORY(./src/client)
 
 TARGET_LINK_LIBRARIES(Server PRIVATE Threads::Threads ${Boost_LIBRARIES})
 TARGET_LINK_LIBRARIES(Server PRIVATE ${PostgreSQL_LIBRARIES})
 
 TARGET_LINK_LIBRARIES(Client PRIVATE Threads::Threads ${Boost_LIBRARIES})
+TARGET_LINK_LIBRARIES(client PRIVATE Threads::Threads ${Boost_LIBRARIES})

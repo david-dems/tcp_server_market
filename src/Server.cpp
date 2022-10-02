@@ -60,7 +60,7 @@ public:
         handlerFactory.addHandler<HelHandler>("HelHandler");
         handlerFactory.addHandler<RegHandler>("RegHandler");
         handlerFactory.addHandler<OrderHandler>("OrderHandler");
-        handlerFactory.addHandler<ActiveOrderHandler>("ActiveOrderHandler");
+        handlerFactory.addHandler<ActiveOrderHandler>("ActiveOrdersHandler");
         handlerFactory.addHandler<BalanceHandler>("BalanceHandler");
         handlerFactory.addHandler<SignInHandler>("SignInHandler");
     }
