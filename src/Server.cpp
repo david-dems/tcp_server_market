@@ -11,6 +11,7 @@
 #include "ActiveOrdersHandler.h"
 #include "BalanceHandler.h"
 #include "SignInHandler.h"
+#include "Engine.h"
 
 using boost::asio::ip::tcp;
 
@@ -170,6 +171,8 @@ int main()
 {
     try
     {
+        MatchingEngine engine;
+        engine.run();
         boost::asio::io_service io_service;
         static Core core;
 

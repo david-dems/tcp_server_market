@@ -14,6 +14,7 @@ INCLUDE_DIRECTORIES(
     ./include/postgres
     ./include/handlers
     ./include/client
+    ./include/matchengine
     )
 
 SET(CMAKE_CXX_STANDARD 17)
@@ -26,6 +27,7 @@ ADD_SUBDIRECTORY(./src)
 ADD_SUBDIRECTORY(./src/postgres)
 ADD_SUBDIRECTORY(./src/handlers)
 ADD_SUBDIRECTORY(./src/client)
+ADD_SUBDIRECTORY(./src/matchengine)
 
 TARGET_LINK_LIBRARIES(Server PRIVATE Threads::Threads ${Boost_LIBRARIES})
 TARGET_LINK_LIBRARIES(Server PRIVATE ${PostgreSQL_LIBRARIES})
