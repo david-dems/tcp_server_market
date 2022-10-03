@@ -173,6 +173,7 @@ int main()
     {
         MatchingEngine engine;
         engine.run();
+
         boost::asio::io_service io_service;
         static Core core;
 

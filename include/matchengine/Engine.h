@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <chrono>
 
 struct order {
     int id;
@@ -23,6 +24,7 @@ public:
     void run();
 private:
     void match();
+    void repeatMatch();
     std::vector<order> getSaleOrders();
     std::vector<order> getPurchaseOrders();
     //void processDeal();

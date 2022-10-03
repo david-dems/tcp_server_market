@@ -154,6 +154,13 @@ void MatchingEngine::match(){
 
 
 void MatchingEngine::run(){
-    std::thread engine_thread(&MatchingEngine::match, this);
-    engine_thread.join();
+    std::thread engine_thread(&MatchingEngine::repeatMatch, this);
+    engine_thread.detach();
+}
+
+void MatchingEngine::repeatMatch(){
+    while(true){
+        match();
+        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+    }
 }
