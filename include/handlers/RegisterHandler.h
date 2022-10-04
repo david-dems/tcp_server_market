@@ -16,6 +16,15 @@ class RegHandler : public RequestHandler{
         
         insert into Users (firstname, lastname, login, password)
         values ('%1%', '%2%', '%3%', '%4%');
+
+        insert into balance (userid, usd, rub)
+        values(
+            (select userid from users
+            order by userid desc
+            limit 1),
+            0,
+            0
+        );
         
         select userid from users
         order by userid desc

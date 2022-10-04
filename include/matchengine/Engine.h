@@ -29,7 +29,7 @@ private:
     std::vector<order> getPurchaseOrders();
     //void processDeal();
 
-    int time;
+    int time = 3000;
 
     std::string sale_query = R"(
         BEGIN ISOLATION LEVEL READ COMMITTED;

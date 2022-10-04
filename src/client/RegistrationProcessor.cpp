@@ -3,7 +3,7 @@
 std::string RegistrationProcessor::process(tcp::socket& s){
     std::string firstName, lastName, login, pswd;
     std::cout << "Registration required!" << std::endl;
-    std::cout << "Enter your first namr, last name, login, password: ";
+    std::cout << "Enter your first name, last name, login, password: " << std::endl;
     std::cin >> firstName >> lastName >> login >>  pswd;
 
     nlohmann::json j;

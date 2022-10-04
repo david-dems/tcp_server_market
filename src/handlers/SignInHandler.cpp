@@ -22,8 +22,6 @@ std::string SignInHandler::makeReply(nlohmann::json j){
         if (PQresultStatus(res) == PGRES_TUPLES_OK && PQntuples(res)) {
             ID = PQgetvalue (res, 0, 0);
             count = PQntuples(res);
-            std::cout << ID << std::endl;
-            std::cout << count << std::endl;
         }
 
         if (PQresultStatus(res) == PGRES_FATAL_ERROR){

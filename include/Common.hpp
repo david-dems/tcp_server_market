@@ -3,7 +3,7 @@
 
 #include <string>
 
-static short port = 5555;
+static short port = 5556;
 
 namespace Requests
 {

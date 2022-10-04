@@ -1,6 +1,9 @@
 #include "Engine.h"
 #include <boost/format.hpp>
 #include <thread>
+#include <cmath>
+#include <sstream>
+#include <iomanip>
 
 std::vector<order> MatchingEngine::getSaleOrders(){
     auto C = DataBase::getDB()->Pool().getConnection();
@@ -13,8 +16,12 @@ std::vector<order> MatchingEngine::getSaleOrders(){
                 order tmp;
                 tmp.id = std::stoi(PQgetvalue(res, 0, 0));
                 tmp.userid = std::stoi(PQgetvalue(res, 0, 1));
+                
+
                 tmp.vol = std::stod(PQgetvalue(res, 0, 2));
-                tmp.price = std::stod(PQgetvalue(res, 0, 3));
+
+                std::stringstream stream;
+                tmp.price =round(std::stod(PQgetvalue(res, 0, 3)) * 100) / 100;
                 tmp.status = PQgetvalue(res, 0, 4);
                 orders.push_back(tmp);
             }
@@ -43,8 +50,8 @@ std::vector<order> MatchingEngine::getPurchaseOrders(){
                 order tmp;
                 tmp.id = std::stoi(PQgetvalue(res, 0, 0));
                 tmp.userid = std::stoi(PQgetvalue(res, 0, 1));
-                tmp.vol = std::stod(PQgetvalue(res, 0, 2));
-                tmp.price = std::stod(PQgetvalue(res, 0, 3));
+                tmp.vol = round(std::stod(PQgetvalue(res, 0, 2)) * 100) / 100;
+                tmp.price =round(std::stod(PQgetvalue(res, 0, 3)) * 100) / 100;
                 tmp.status = PQgetvalue(res, 0, 4);;
                 orders.push_back(tmp);
             }
@@ -78,7 +85,7 @@ void MatchingEngine::match(){
     std::string order_status_s;
     std::string order_status_p;
 
-    while (it_sales != sales.end() || it_purch != purchases.end()){
+    while (it_sales != sales.end() && it_purch != purchases.end()){
         if (it_sales->price <= it_purch->price){
             deal d;
             int order_id_s = it_sales->id;
@@ -112,7 +119,7 @@ void MatchingEngine::match(){
 
             std::string query;
 
-            query += begin;
+            query = begin;
             
             boost::format fmt;
             fmt = boost::format(insert_deal) % d.sellerid % d.buyerid % d.vol % d.price;
@@ -120,7 +127,7 @@ void MatchingEngine::match(){
 
             fmt = boost::format(update_balance) % "-" % d.vol % "+" % (d.vol * d.price) % d.sellerid;
             query += fmt.str(); 
-            fmt = boost::format(update_balance) % "+" % d.vol % "-" % (-d.vol * d.price) % d.buyerid;
+            fmt = boost::format(update_balance) % "+" % d.vol % "-" % (d.vol * d.price) % d.buyerid;
             query += fmt.str(); 
 
 
@@ -161,6 +168,6 @@ void MatchingEngine::run(){
 void MatchingEngine::repeatMatch(){
     while(true){
         match();
-        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+        std::this_thread::sleep_for(std::chrono::milliseconds(time));
     }
 }
