@@ -13,6 +13,8 @@ namespace Requests
     static std::string ActiveOrders = "ActiveOrders";
     static std::string Balance = "Balance";
     static std::string SignIn = "SignIn";
+    static std::string History = "HistoryOrder";
+    static std::string Deals = "Deals";
 }
 
 #endif //CLIENSERVERECN_COMMON_HPP

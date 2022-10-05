@@ -6,7 +6,7 @@
 #include "DataBase.h"
 #include <boost/format.hpp>
 
-class ActiveOrderHandler : public RequestHandler{
+class HistoryOrderHandler : public RequestHandler{
     public:
     std::string makeReply(nlohmann::json j);
     private:
@@ -14,7 +14,7 @@ class ActiveOrderHandler : public RequestHandler{
         BEGIN ISOLATION LEVEL READ COMMITTED;  
         select vol, price, direction, appid 
         from applications 
-        where userid = %1% and status = 'active'; 
+        where userid = %1% and status = 'closed'; 
         COMMIT; 
     )";
     

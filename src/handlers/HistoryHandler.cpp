@@ -1,8 +1,8 @@
-#include "ActiveOrdersHandler.h"
+#include "HistoryHandler.h"
 
 #include <iostream>
 
-std::string ActiveOrderHandler::makeReply(nlohmann::json j){
+std::string HistoryOrderHandler::makeReply(nlohmann::json j){
     auto C = DataBase::getDB()->Pool().getConnection();
 
     std::string query;

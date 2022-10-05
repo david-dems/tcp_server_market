@@ -1,8 +1,8 @@
-#include "ActiveOrdersHandler.h"
+#include "DealsHandler.h"
 
 #include <iostream>
 
-std::string ActiveOrderHandler::makeReply(nlohmann::json j){
+std::string DealsHandler::makeReply(nlohmann::json j){
     auto C = DataBase::getDB()->Pool().getConnection();
 
     std::string query;
@@ -10,16 +10,16 @@ std::string ActiveOrderHandler::makeReply(nlohmann::json j){
     auto fmt = boost::format(query_template) % j["UserId"].get<std::string>();
     query = fmt.str();
 
-    std::vector<std::string> vol, price, direction, id;
+    std::vector<std::string> sellerid, buyerid, vol, price;
 
     PQsendQuery(C->connection().get(), query.c_str());
     while(auto res = PQgetResult(C->connection().get())){
         if (PQresultStatus(res) == PGRES_TUPLES_OK && PQntuples(res)) {
             for (int i = 0; i < PQntuples(res); i++){
-                vol.push_back(PQgetvalue(res, i, 0));
-                price.push_back(PQgetvalue(res, i, 1));
-                direction.push_back(PQgetvalue(res, i, 2));
-                id.push_back(PQgetvalue(res, i, 3));
+                sellerid.push_back(PQgetvalue(res, i, 0));
+                buyerid.push_back(PQgetvalue(res, i, 1));
+                vol.push_back(PQgetvalue(res, i, 2));
+                price.push_back(PQgetvalue(res, i, 3));
             }
         }
 
@@ -29,10 +29,10 @@ std::string ActiveOrderHandler::makeReply(nlohmann::json j){
         PQclear(res);
     }
 
-    reply["id"] = id;
+    reply["sellerid"] = sellerid;
+    reply["buyerid"] = buyerid;
     reply["vol"] = vol;
     reply["price"] = price;
-    reply["direction"] = direction;
     
 
     DataBase::getDB()->Pool().freeConnection(C);

@@ -6,15 +6,15 @@
 #include "DataBase.h"
 #include <boost/format.hpp>
 
-class ActiveOrderHandler : public RequestHandler{
+class DealsHandler : public RequestHandler{
     public:
     std::string makeReply(nlohmann::json j);
     private:
     std::string query_template = R"(
         BEGIN ISOLATION LEVEL READ COMMITTED;  
-        select vol, price, direction, appid 
-        from applications 
-        where userid = %1% and status = 'active'; 
+        select sellerid, buyerid, vol, price, date 
+        from deals 
+        where sellerid = %1% or buyerid = %1%; 
         COMMIT; 
     )";
     
