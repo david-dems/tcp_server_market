@@ -5,7 +5,7 @@ PGConnectionPool::PGConnectionPool(){
 }
 
 void PGConnectionPool::createPool(){
-    std::lock_guard<std::mutex> locker(mutex);
+    std::lock_guard locker(mutex);
 
     for (int i = 0; i < pool_size; i++){
         connections.emplace(std::make_shared<PGConnection>());
@@ -24,7 +24,7 @@ std::shared_ptr<PGConnection> PGConnectionPool::getConnection(){
 }
 
 void PGConnectionPool::freeConnection(std::shared_ptr<PGConnection> conn){
-    std::unique_lock<std::mutex> lock(mutex);
+    std::unique_lock lock(mutex);
     connections.push(conn);
     lock.unlock();
     condition.notify_one();
