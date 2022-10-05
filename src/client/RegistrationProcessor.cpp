@@ -17,6 +17,6 @@ std::string RegistrationProcessor::process(tcp::socket& s){
     // Для регистрации Id не нужен, заполним его нулём
     SendMessage(s, j);
     auto rep = ReadMessage(s);
-    return rep["UserId"].get<std::string>();
+    return std::move(rep["UserId"].get<std::string>());
 }
 

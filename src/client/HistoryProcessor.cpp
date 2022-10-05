@@ -19,5 +19,5 @@ std::string HistoryProcessor::process(tcp::socket& s){
         reply += "USD: " + vol[i] + " Price: " + price[i] + " " + direction[i] + "\n";
     }
     
-    return reply;
+    return std::move(reply);
 }

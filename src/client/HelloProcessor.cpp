@@ -8,5 +8,5 @@ std::string HelloProcessor::process(tcp::socket& s){
     SendMessage(s, req);
     auto rep = ReadMessage(s);
 
-    return rep["Name"].get<std::string>();
+    return std::move(rep["Name"].get<std::string>());
 }

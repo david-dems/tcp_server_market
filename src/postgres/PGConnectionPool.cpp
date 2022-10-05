@@ -13,7 +13,7 @@ void PGConnectionPool::createPool(){
 }
 
 std::shared_ptr<PGConnection> PGConnectionPool::getConnection(){
-    std::unique_lock<std::mutex> lock(mutex);
+    std::unique_lock lock(mutex);
 
     while(connections.empty())
         condition.wait(lock);

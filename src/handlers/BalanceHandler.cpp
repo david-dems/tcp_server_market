@@ -25,11 +25,11 @@ std::string BalanceHandler::makeReply(nlohmann::json j){
         PQclear(res);
     }
 
-    reply["USD"] = USD;
-    reply["RUB"] = RUB;
+    reply["USD"] = std::move(USD);
+    reply["RUB"] = std::move(RUB);
     
 
     DataBase::getDB()->Pool().freeConnection(C);
 
-    return reply.dump();        
+    return std::move(reply.dump());        
 }

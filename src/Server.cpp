@@ -97,7 +97,7 @@ public:
            
             //Создаем необходимый для обработки реквеста колбэк 
             RequestHandler *h = handlerFactory.make(reqType + "Handler");
-            std::string reply = h->makeReply(j);
+            std::string reply = h->makeReply(std::move(j));
             delete h; // после использования нужно удалить хендлер из-за new в фабрике
             
             

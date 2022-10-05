@@ -28,7 +28,7 @@ std::string HelHandler::makeReply(nlohmann::json j){
     
     nlohmann::json reply;
     std::string reply_str(ID);
-    reply["Name"] = reply_str;
+    reply["Name"] = std::move(reply_str);
 
-    return reply.dump();
+    return std::move(reply.dump());
 }

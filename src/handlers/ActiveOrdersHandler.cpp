@@ -37,5 +37,5 @@ std::string ActiveOrderHandler::makeReply(nlohmann::json j){
 
     DataBase::getDB()->Pool().freeConnection(C);
 
-    return reply.dump();        
+    return std::move(reply.dump());        
 }

@@ -34,7 +34,7 @@ std::string RegHandler::makeReply(nlohmann::json j){
     
     std::string reply_string(ID);
     nlohmann::json reply;
-    reply["UserId"] = reply_string; 
+    reply["UserId"] = std::move(reply_string); 
 
-    return reply.dump();
+    return std::move(reply.dump());
 }

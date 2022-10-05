@@ -29,13 +29,13 @@ std::string DealsHandler::makeReply(nlohmann::json j){
         PQclear(res);
     }
 
-    reply["sellerid"] = sellerid;
-    reply["buyerid"] = buyerid;
-    reply["vol"] = vol;
-    reply["price"] = price;
+    reply["sellerid"] = std::move(sellerid);
+    reply["buyerid"] = std::move(buyerid);
+    reply["vol"] = std::move(vol);
+    reply["price"] = std::move(price);
     
 
     DataBase::getDB()->Pool().freeConnection(C);
 
-    return reply.dump();        
+    return std::move(reply.dump());        
 }

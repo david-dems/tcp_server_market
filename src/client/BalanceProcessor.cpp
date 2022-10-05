@@ -12,5 +12,5 @@ std::string BalanceProcessor::process(tcp::socket& s){
     auto usd = resp["USD"].get<std::string>();
     auto rub = resp["RUB"].get<std::string>();
     
-    return "USD: " + usd + " RUB : " + rub;
+    return std::move("USD: " + usd + " RUB : " + rub);
 }

@@ -15,5 +15,5 @@ int vol, price;
                 
     SendMessage(s, req);
     auto resp = ReadMessage(s);
-    return resp["Message"].get<std::string>();
+    return std::move(resp["Message"].get<std::string>());
 }

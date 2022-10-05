@@ -27,7 +27,7 @@ std::string OrderHandler::makeReply(nlohmann::json j){
     }
 
     if (count == 0)
-        return "This user is not registred";
+        return std::move("This user is not registred");
 
     std::string reply_str = "Order has been published!";
     fmt = boost::format(query_template) % j["UserId"].get<std::string>() % j["vol"] % j["price"] % j["direction"].get<std::string>() % "active" % "CURRENT_TIMESTAMP";
@@ -46,7 +46,7 @@ std::string OrderHandler::makeReply(nlohmann::json j){
     DataBase::getDB()->Pool().freeConnection(C);
 
     nlohmann::json reply;
-    reply["Message"] = reply_str;
+    reply["Message"] = std::move(reply_str);
 
-    return reply.dump();        
+    return std::move(reply.dump());        
 }

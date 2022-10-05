@@ -16,5 +16,5 @@ std::string LoginProcessor::process(tcp::socket& s){
         std::cout << rep["Message"].get<std::string>() << std::endl;
         return rep["UserId"].get<std::string>();
     }
-    return rep["UserId"].get<std::string>();
+    return std::move(rep["UserId"].get<std::string>());
 }

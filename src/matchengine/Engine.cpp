@@ -4,6 +4,7 @@
 #include <cmath>
 #include <sstream>
 #include <iomanip>
+#include <tuple>
 
 std::vector<order> MatchingEngine::getSaleOrders(){
     auto C = DataBase::getDB()->Pool().getConnection();

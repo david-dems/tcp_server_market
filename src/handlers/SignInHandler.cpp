@@ -44,5 +44,5 @@ std::string SignInHandler::makeReply(nlohmann::json j){
         resp["UserId"] = id;
     }
 
-    return resp.dump();
+    return std::move(resp.dump());
 }

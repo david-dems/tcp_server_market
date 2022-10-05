@@ -29,13 +29,13 @@ std::string HistoryOrderHandler::makeReply(nlohmann::json j){
         PQclear(res);
     }
 
-    reply["id"] = id;
-    reply["vol"] = vol;
-    reply["price"] = price;
-    reply["direction"] = direction;
+    reply["id"] = std::move(id);
+    reply["vol"] = std::move(vol);
+    reply["price"] = std::move(price);
+    reply["direction"] = std::move(direction);
     
 
     DataBase::getDB()->Pool().freeConnection(C);
 
-    return reply.dump();        
+    return std::move(reply.dump());        
 }
