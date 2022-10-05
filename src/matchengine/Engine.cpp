@@ -14,15 +14,11 @@ std::vector<order> MatchingEngine::getSaleOrders(){
         if (PQresultStatus(res) == PGRES_TUPLES_OK && PQntuples(res)) {
             for (int i = 0; i < PQntuples(res); i++){
                 order tmp;
-                tmp.id = std::stoi(PQgetvalue(res, 0, 0));
-                tmp.userid = std::stoi(PQgetvalue(res, 0, 1));
-                
-
-                tmp.vol = std::stod(PQgetvalue(res, 0, 2));
-
-                std::stringstream stream;
-                tmp.price =round(std::stod(PQgetvalue(res, 0, 3)) * 100) / 100;
-                tmp.status = PQgetvalue(res, 0, 4);
+                tmp.id = std::stoi(PQgetvalue(res, i, 0));
+                tmp.userid = std::stoi(PQgetvalue(res, i, 1));
+                tmp.vol = std::stod(PQgetvalue(res, i, 2));
+                tmp.price =round(std::stod(PQgetvalue(res, i, 3)) * 100) / 100;
+                tmp.status = PQgetvalue(res, i, 4);
                 orders.push_back(tmp);
             }
         }
@@ -48,11 +44,11 @@ std::vector<order> MatchingEngine::getPurchaseOrders(){
         if (PQresultStatus(res) == PGRES_TUPLES_OK && PQntuples(res)) {
             for (int i = 0; i < PQntuples(res); i++){
                 order tmp;
-                tmp.id = std::stoi(PQgetvalue(res, 0, 0));
-                tmp.userid = std::stoi(PQgetvalue(res, 0, 1));
-                tmp.vol = round(std::stod(PQgetvalue(res, 0, 2)) * 100) / 100;
-                tmp.price =round(std::stod(PQgetvalue(res, 0, 3)) * 100) / 100;
-                tmp.status = PQgetvalue(res, 0, 4);;
+                tmp.id = std::stoi(PQgetvalue(res, i, 0));
+                tmp.userid = std::stoi(PQgetvalue(res, i, 1));
+                tmp.vol = round(std::stod(PQgetvalue(res, i, 2)) * 100) / 100;
+                tmp.price =round(std::stod(PQgetvalue(res, i, 3)) * 100) / 100;
+                tmp.status = PQgetvalue(res, i, 4);;
                 orders.push_back(tmp);
             }
         }
@@ -74,6 +70,15 @@ void MatchingEngine::match(){
     auto sales = getSaleOrders();
     auto purchases = getPurchaseOrders();
 
+//    for (auto val : sales){
+//        std::cout << val.id << " " << val.userid <<  " ";
+//    }
+//    std::cout << std::endl;
+//    for (auto val : purchases){
+//        std::cout << val.id << " " << val.userid <<  " ";
+//    }
+//    std::cout << std::endl;
+
     if (sales.size() == 0 || purchases.size() == 0){
         DataBase::getDB()->Pool().freeConnection(C);
         return;
@@ -85,7 +90,40 @@ void MatchingEngine::match(){
     std::string order_status_s;
     std::string order_status_p;
 
-    while (it_sales != sales.end() && it_purch != purchases.end()){
+    auto head = purchases.begin();    
+    bool backtohead = false;
+    while(it_sales != sales.end() && it_purch != purchases.end()){
+        if (it_sales->userid == it_purch->userid){
+//            std::cout << "userids are same" << std::endl;
+//            std::cout << it_sales->userid << " " << it_sales->status << std::endl;
+//            std::cout << it_purch->userid << " " << it_purch->status << std::endl;
+            if (std::next(it_purch,1) != purchases.end()){
+                backtohead = true;
+                head = it_purch;
+                it_purch++;
+                continue;
+            } else {
+                it_purch = head;
+                it_sales++;
+                continue;
+            } 
+        }
+
+        if (it_sales->status != "active " && it_purch->status != "active"){
+            it_sales++;
+            it_purch++;
+            continue;
+        }
+
+        if (it_sales->status != "active"){
+            it_sales++;
+            continue;
+        }
+        if (it_purch->status != "active"){
+            it_purch++;
+            continue;
+        }
+
         if (it_sales->price <= it_purch->price){
             deal d;
             int order_id_s = it_sales->id;
@@ -97,7 +135,9 @@ void MatchingEngine::match(){
                 d.price = it_sales->price;
                 order_status_s = "active";
                 order_status_p = "closed";
-                it_purch++;
+                it_purch->status = "closed";
+                it_purch->vol -= d.vol;
+                it_sales->vol -= d.vol;
             } else if (it_sales->vol < it_purch->vol){
                 d.sellerid = it_sales->userid;
                 d.buyerid = it_purch->userid;
@@ -105,7 +145,13 @@ void MatchingEngine::match(){
                 d.price = it_sales->price;
                 order_status_s = "closed";
                 order_status_p = "active";
-                it_sales++;
+                it_sales->status = "closed";
+                it_purch->vol -= d.vol;
+                it_sales->vol -= d.vol;
+                if (backtohead){
+                    it_purch = head;
+                    backtohead = false;
+                }
             } else if (it_sales->vol == it_purch->vol){
                 d.sellerid = it_sales->userid;
                 d.buyerid = it_purch->userid;
@@ -113,9 +159,18 @@ void MatchingEngine::match(){
                 d.price = it_sales->price;
                 order_status_s = "closed";
                 order_status_p = "closed";
-                it_sales++;
-                it_purch++;
+                it_sales->status = "closed";
+                it_purch->status = "closed";
+                it_purch->vol -= d.vol;
+                it_sales->vol -= d.vol;
+                if (backtohead){
+                    it_purch = head;
+                    backtohead = false;
+                }
             }
+
+            //std::cout << "seller: " << d.sellerid << std::endl;
+            //std::cout << "buyer: " << d.buyerid << std::endl;
 
             std::string query;
 
@@ -147,14 +202,17 @@ void MatchingEngine::match(){
                 }
                 PQclear(res);   
             }
-
-        
         } else {
-            break;
+            if (!backtohead){
+                break;
+            } else {
+                it_purch = head;
+                it_sales++;
+                continue;
+            }
         }
-        
     }
-    
+
     DataBase::getDB()->Pool().freeConnection(C);
 
 }
