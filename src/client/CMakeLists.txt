@@ -7,6 +7,7 @@ SET(CLIENT_SOURCE
     ${CMAKE_CURRENT_SOURCE_DIR}/MakeOrderProcessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/HelloProcessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ActiveOrdersProcessor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/HistoryProcessor.cpp
 )
 
 tARGET_SOURCES(client PUBLIC ${CLIENT_SOURCE})

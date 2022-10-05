@@ -17,6 +17,7 @@
 #include "HelloProcessor.h"
 #include "ActiveOrdersProcessor.h"
 #include "BalanceProcessor.h"
+#include "HistoryProcessor.h"
 
 using boost::asio::ip::tcp;
 
@@ -71,7 +72,8 @@ int main(){
         main_factory.addProcessor<MakeOrderProcessor>("2");
         main_factory.addProcessor<BalanceProcessor>("3");
         main_factory.addProcessor<ActiveOrdersProcessor>("4");
-        main_factory.addProcessor<ExitProcessor>("5");
+        main_factory.addProcessor<HistoryProcessor>("5");
+        main_factory.addProcessor<ExitProcessor>("6");
 
         while (true)
         {
@@ -81,7 +83,8 @@ int main(){
                          "2) Make Order\n"
                          "3) Show balance\n"
                          "4) Show active orders\n"
-                         "5) Exit\n"
+                         "5) Show closed orders\n"
+                         "6) Exit\n"
                          << std::endl;
 
             std::string menu_option;
