@@ -20,6 +20,7 @@ std::vector<order> MatchingEngine::getSaleOrders(){
                 tmp.vol = std::stod(PQgetvalue(res, i, 2));
                 tmp.price =round(std::stod(PQgetvalue(res, i, 3)) * 100) / 100;
                 tmp.status = PQgetvalue(res, i, 4);
+                tmp.date = std::stol(PQgetvalue(res, i, 5));
                 orders.push_back(tmp);
             }
         }
@@ -49,7 +50,8 @@ std::vector<order> MatchingEngine::getPurchaseOrders(){
                 tmp.userid = std::stoi(PQgetvalue(res, i, 1));
                 tmp.vol = round(std::stod(PQgetvalue(res, i, 2)) * 100) / 100;
                 tmp.price =round(std::stod(PQgetvalue(res, i, 3)) * 100) / 100;
-                tmp.status = PQgetvalue(res, i, 4);;
+                tmp.status = PQgetvalue(res, i, 4);
+                tmp.date = std::stol(PQgetvalue(res, i, 5));
                 orders.push_back(tmp);
             }
         }
@@ -130,67 +132,83 @@ void MatchingEngine::match(){
             int order_id_s = it_sales->id;
             int order_id_b = it_purch->id;
             if (it_sales->vol > it_purch->vol){
-                d.sellerid = it_sales->userid;
-                d.buyerid = it_purch->userid;
-                d.vol = it_purch->vol;
-                d.price = it_sales->price;
+
+                d = {
+                    it_sales->userid,
+                    it_purch->userid,
+                    it_purch->vol,
+                    (it_sales->date > it_purch->date) ? it_purch->price : it_sales->price
+                };
+
                 order_status_s = "active";
                 order_status_p = "closed";
+
                 it_purch->status = "closed";
                 it_purch->vol -= d.vol;
                 it_sales->vol -= d.vol;
+
             } else if (it_sales->vol < it_purch->vol){
-                d.sellerid = it_sales->userid;
-                d.buyerid = it_purch->userid;
-                d.vol = it_sales->vol;
-                d.price = it_sales->price;
+                d = {
+                    it_sales->userid,
+                    it_purch->userid,
+                    it_sales->vol,
+                    (it_sales->date > it_purch->date) ? it_purch->price : it_sales->price
+                };
+
                 order_status_s = "closed";
                 order_status_p = "active";
+
                 it_sales->status = "closed";
                 it_purch->vol -= d.vol;
                 it_sales->vol -= d.vol;
+
                 if (backtohead){
                     it_purch = head;
                     backtohead = false;
                 }
             } else if (it_sales->vol == it_purch->vol){
-                d.sellerid = it_sales->userid;
-                d.buyerid = it_purch->userid;
-                d.vol = it_sales->vol;
-                d.price = it_sales->price;
+                d = {
+                    it_sales->userid,
+                    it_purch->userid,
+                    it_sales->vol,
+                    (it_sales->date > it_purch->date) ? it_purch->price : it_sales->price
+                };
+
                 order_status_s = "closed";
                 order_status_p = "closed";
+
                 it_sales->status = "closed";
                 it_purch->status = "closed";
                 it_purch->vol -= d.vol;
                 it_sales->vol -= d.vol;
+
                 if (backtohead){
                     it_purch = head;
                     backtohead = false;
                 }
             }
 
-            //std::cout << "seller: " << d.sellerid << std::endl;
-            //std::cout << "buyer: " << d.buyerid << std::endl;
 
             std::string query;
 
             query = begin;
             
+            auto [seller, buyer, vol, price] = d;
+
             boost::format fmt;
-            fmt = boost::format(insert_deal) % d.sellerid % d.buyerid % d.vol % d.price;
+            fmt = boost::format(insert_deal) % seller % buyer % vol % price;
             query += fmt.str(); 
 
-            fmt = boost::format(update_balance) % "-" % d.vol % "+" % (d.vol * d.price) % d.sellerid;
+            fmt = boost::format(update_balance) % "-" % vol % "+" % (vol * price) % seller;
             query += fmt.str(); 
-            fmt = boost::format(update_balance) % "+" % d.vol % "-" % (d.vol * d.price) % d.buyerid;
-            query += fmt.str(); 
-
-
-            fmt = boost::format(update_order) % d.vol % order_status_s % order_id_s;
+            fmt = boost::format(update_balance) % "+" % vol % "-" % (vol * price) % buyer;
             query += fmt.str(); 
 
-            fmt = boost::format(update_order) % d.vol % order_status_p % order_id_b;
+
+            fmt = boost::format(update_order) % vol % order_status_s % order_id_s;
+            query += fmt.str(); 
+
+            fmt = boost::format(update_order) % vol % order_status_p % order_id_b;
             query += fmt.str(); 
 
             query += end;

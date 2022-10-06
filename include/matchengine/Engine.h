@@ -9,6 +9,7 @@ struct order {
     int userid;
     double vol;
     double price;
+    long int date;
     std::string status;
 };
 
@@ -33,7 +34,7 @@ private:
 
     std::string sale_query = R"(
         BEGIN ISOLATION LEVEL READ COMMITTED;
-        select appid, userid, vol, price, status
+        select appid, userid, vol, price, status, to_char(date, 'YYYYMMDDHHMMSSmm')
         from applications
         where status = 'active' and direction = 'sale'
         order by price, date;
@@ -42,7 +43,7 @@ private:
 
     std::string purchase_query = R"(
         BEGIN ISOLATION LEVEL READ COMMITTED;
-        select appid, userid, vol as real, price, status, date
+        select appid, userid, vol, price, status, to_char(date, 'YYYYMMDDHHMMSSmm')
         from applications
         where status = 'active' and direction = 'purchase'
         order by price desc, date asc;
