@@ -44,8 +44,7 @@ std::string DealsHandler::makeReply(nlohmann::json j){
         PQclear(res);
     }
 
-    reply["Data"] = std::move(data);
-    
+    reply["Data"] = data;
 
     DataBase::getDB()->Pool().freeConnection(C);
 

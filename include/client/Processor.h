@@ -26,7 +26,7 @@ protected:
    
    nlohmann::json ReadMessage(tcp::socket& aSocket){
       boost::asio::streambuf b;
-      boost::asio::read_until(aSocket, b, "\0");
+      boost::asio::read_until(aSocket, b, "\n");
       std::istream is(&b);
       std::string line(std::istreambuf_iterator<char>(is), {});
       auto j = nlohmann::json::parse(line);

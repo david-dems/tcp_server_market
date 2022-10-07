@@ -62,9 +62,10 @@ public:
             RequestHandler *h = handlerFactory.make(reqType + "Handler");
             std::string reply = h->makeReply(std::move(j));
             delete h; // после использования нужно удалить хендлер из-за new в фабрике
+            reply += "\n";
             
-            
-            boost::asio::async_write(socket_,
+
+            boost::asio::async_write(socket_, 
                 boost::asio::buffer(reply, reply.size()),
                 boost::bind(&session::handle_write, this,
                     boost::asio::placeholders::error));
@@ -95,6 +96,7 @@ private:
     enum { max_length = 1024 };
     char data_[max_length];
     HandlerFactory handlerFactory;
+
 };
 
 class server

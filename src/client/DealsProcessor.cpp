@@ -30,7 +30,7 @@ std::string DealsProcessor::process(tcp::socket& s){
         else
             reply += "Bought from " + sFName + " " + sLName;
 
-        reply += "USD: " + vol + "price: " + price + " date of deal: " + date.substr(0, 19) + "\n";
+        reply += " USD : " + vol + " price: " + price + " date of deal: " + date.substr(0, 19) + "\n";
     }
     
     return std::move(reply);
