@@ -17,10 +17,10 @@ class DeleteHandler : public RequestHandler{
         COMMIT; 
     )";
     
-    std::string query_template_check_user = R"(
+    std::string check_appid_template = R"(
         BEGIN ISOLATION LEVEL READ COMMITTED; 
-        select count(userID) from Users  
-        where userID = %1%;
+        select count(appid) from applications  
+        where userID = %1% and appid = %2% and status = 'active';
         COMMIT;
     )";
 };
