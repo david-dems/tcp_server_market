@@ -9,6 +9,8 @@ SET(CLIENT_SOURCE
     ${CMAKE_CURRENT_SOURCE_DIR}/ActiveOrdersProcessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/HistoryProcessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/DealsProcessor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/DeleteProcessor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/QuotationProcessor.cpp
 )
 
 tARGET_SOURCES(client PUBLIC ${CLIENT_SOURCE})

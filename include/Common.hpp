@@ -15,6 +15,8 @@ namespace Requests
     static std::string SignIn = "SignIn";
     static std::string History = "HistoryOrder";
     static std::string Deals = "Deals";
+    static std::string Delete = "Delete";
+    static std::string Quotations = "Quotations";
 }
 
 #endif //CLIENSERVERECN_COMMON_HPP

@@ -13,6 +13,8 @@
 #include "SignInHandler.h"
 #include "HistoryHandler.h"
 #include "DealsHandler.h"
+#include "DeleteHandler.h"
+#include "QuotationsHandler.h"
 #include "Engine.h"
 
 using boost::asio::ip::tcp;
@@ -31,6 +33,8 @@ public:
         handlerFactory.addHandler<SignInHandler>("SignInHandler");
         handlerFactory.addHandler<HistoryOrderHandler>("HistoryOrderHandler");
         handlerFactory.addHandler<DealsHandler>("DealsHandler");
+        handlerFactory.addHandler<DeleteHandler>("DeleteHandler");
+        handlerFactory.addHandler<QuotationsHandler>("QuotationsHandler");
     }
 
     tcp::socket& socket()
@@ -60,9 +64,11 @@ public:
            
             //Создаем необходимый для обработки реквеста колбэк 
             RequestHandler *h = handlerFactory.make(reqType + "Handler");
+            
             std::string reply = h->makeReply(std::move(j));
-            delete h; // после использования нужно удалить хендлер из-за new в фабрике
             reply += "\n";
+            
+            delete h; // после использования нужно удалить хендлер из-за new в фабрике
             
 
             boost::asio::async_write(socket_, 
