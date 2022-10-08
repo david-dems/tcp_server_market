@@ -69,23 +69,36 @@ std::vector<order> MatchingEngine::getPurchaseOrders(){
 
 
 void MatchingEngine::match(){
-    auto C = DataBase::getDB()->Pool().getConnection();
     auto sales = getSaleOrders();
     auto purchases = getPurchaseOrders();
 
-//    for (auto val : sales){
-//        std::cout << val.id << " " << val.userid <<  " ";
-//    }
-//    std::cout << std::endl;
-//    for (auto val : purchases){
-//        std::cout << val.id << " " << val.userid <<  " ";
-//    }
-//    std::cout << std::endl;
+    auto deals = processDeals(std::move(sales), std::move(purchases));
+    sendQuery(std::move(deals));
+
+}
+
+
+void MatchingEngine::run(){
+    std::thread engine_thread(&MatchingEngine::repeatMatch, this);
+    engine_thread.detach();
+}
+
+void MatchingEngine::repeatMatch(){
+    while(true){
+        match();
+        std::this_thread::sleep_for(std::chrono::milliseconds(time));
+    }
+}
+
+
+std::vector<deal> MatchingEngine::processDeals(std::vector<order> sales, std::vector<order> purchases){
+
 
     if (sales.size() == 0 || purchases.size() == 0){
-        DataBase::getDB()->Pool().freeConnection(C);
-        return;
+        return {};
     }
+
+    std::vector<deal> result;
 
     auto it_sales = sales.begin();
     auto it_purch = purchases.begin();
@@ -97,9 +110,6 @@ void MatchingEngine::match(){
     bool backtohead = false;
     while(it_sales != sales.end() && it_purch != purchases.end()){
         if (it_sales->userid == it_purch->userid){
-//            std::cout << "userids are same" << std::endl;
-//            std::cout << it_sales->userid << " " << it_sales->status << std::endl;
-//            std::cout << it_purch->userid << " " << it_purch->status << std::endl;
             if (std::next(it_purch,1) != purchases.end()){
                 backtohead = true;
                 head = it_purch;
@@ -129,19 +139,18 @@ void MatchingEngine::match(){
 
         if (it_sales->price <= it_purch->price){
             deal d;
-            int order_id_s = it_sales->id;
-            int order_id_b = it_purch->id;
             if (it_sales->vol > it_purch->vol){
 
                 d = {
                     it_sales->userid,
                     it_purch->userid,
                     it_purch->vol,
-                    (it_sales->date > it_purch->date) ? it_purch->price : it_sales->price
+                    (it_sales->date > it_purch->date) ? it_purch->price : it_sales->price,
+                    "active",
+                    "closed",
+                    it_sales->id,
+                    it_purch->id,
                 };
-
-                order_status_s = "active";
-                order_status_p = "closed";
 
                 it_purch->status = "closed";
                 it_purch->vol -= d.vol;
@@ -152,11 +161,12 @@ void MatchingEngine::match(){
                     it_sales->userid,
                     it_purch->userid,
                     it_sales->vol,
-                    (it_sales->date > it_purch->date) ? it_purch->price : it_sales->price
+                    (it_sales->date > it_purch->date) ? it_purch->price : it_sales->price,
+                    "closed",
+                    "active",
+                    it_sales->id,
+                    it_purch->id,
                 };
-
-                order_status_s = "closed";
-                order_status_p = "active";
 
                 it_sales->status = "closed";
                 it_purch->vol -= d.vol;
@@ -171,11 +181,12 @@ void MatchingEngine::match(){
                     it_sales->userid,
                     it_purch->userid,
                     it_sales->vol,
-                    (it_sales->date > it_purch->date) ? it_purch->price : it_sales->price
+                    (it_sales->date > it_purch->date) ? it_purch->price : it_sales->price,
+                    "closed",
+                    "closed",
+                    it_sales->id,
+                    it_purch->id,
                 };
-
-                order_status_s = "closed";
-                order_status_p = "closed";
 
                 it_sales->status = "closed";
                 it_purch->status = "closed";
@@ -188,39 +199,8 @@ void MatchingEngine::match(){
                 }
             }
 
+            result.push_back(d);
 
-            std::string query;
-
-            query = begin;
-            
-            auto [seller, buyer, vol, price] = d;
-
-            boost::format fmt;
-            fmt = boost::format(insert_deal) % seller % buyer % vol % price;
-            query += fmt.str(); 
-
-            fmt = boost::format(update_balance) % "-" % vol % "+" % (vol * price) % seller;
-            query += fmt.str(); 
-            fmt = boost::format(update_balance) % "+" % vol % "-" % (vol * price) % buyer;
-            query += fmt.str(); 
-
-
-            fmt = boost::format(update_order) % vol % order_status_s % order_id_s;
-            query += fmt.str(); 
-
-            fmt = boost::format(update_order) % vol % order_status_p % order_id_b;
-            query += fmt.str(); 
-
-            query += end;
-
-            PQsendQuery(C->connection().get(), query.c_str());
-            while(auto res = PQgetResult(C->connection().get())){
-
-                if (PQresultStatus(res) == PGRES_FATAL_ERROR){
-                    std::cout<< PQresultErrorMessage(res)<<std::endl;
-                }
-                PQclear(res);   
-            }
         } else {
             if (!backtohead){
                 break;
@@ -230,21 +210,46 @@ void MatchingEngine::match(){
                 continue;
             }
         }
-    }
-
-    DataBase::getDB()->Pool().freeConnection(C);
-
+    } 
+    
+    return std::move(result);
 }
 
+void MatchingEngine::sendQuery(std::vector<deal> deals){
+    auto C = DataBase::getDB()->Pool().getConnection();
 
-void MatchingEngine::run(){
-    std::thread engine_thread(&MatchingEngine::repeatMatch, this);
-    engine_thread.detach();
-}
+    for (auto d : deals){
+        std::string query;
 
-void MatchingEngine::repeatMatch(){
-    while(true){
-        match();
-        std::this_thread::sleep_for(std::chrono::milliseconds(time));
+        query = begin;
+          
+        auto [seller, buyer, vol, price, order_status_s, order_status_p, oIds, oIdp] = d;
+
+        boost::format fmt;
+        fmt = boost::format(insert_deal) % seller % buyer % vol % price;
+        query += fmt.str(); 
+
+        fmt = boost::format(update_balance) % "-" % vol % "+" % (vol * price) % seller;
+        query += fmt.str(); 
+        fmt = boost::format(update_balance) % "+" % vol % "-" % (vol * price) % buyer;
+        query += fmt.str(); 
+
+
+        fmt = boost::format(update_order) % vol % order_status_s % oIds;
+        query += fmt.str(); 
+
+        fmt = boost::format(update_order) % vol % order_status_p % oIdp;
+        query += fmt.str(); 
+
+        query += end;
+
+        PQsendQuery(C->connection().get(), query.c_str());
+        while(auto res = PQgetResult(C->connection().get())){
+
+            if (PQresultStatus(res) == PGRES_FATAL_ERROR){
+                std::cout<< PQresultErrorMessage(res)<<std::endl;
+            }
+            PQclear(res);   
+        }
     }
 }

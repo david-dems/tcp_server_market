@@ -18,17 +18,22 @@ struct deal {
      int buyerid;
      double vol;
      double price;
+     std::string s_status;
+     std::string p_status;
+     int s_appid;
+     int p_appid;
 };
 
 class MatchingEngine{
 public:
     void run();
+    std::vector<deal> processDeals(std::vector<order> sales, std::vector<order> purchases);
 private:
     void match();
     void repeatMatch();
     std::vector<order> getSaleOrders();
     std::vector<order> getPurchaseOrders();
-    //void processDeal();
+    void sendQuery(std::vector<deal> deals);
 
     int time = 3000;
 

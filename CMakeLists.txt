@@ -15,20 +15,31 @@ INCLUDE_DIRECTORIES(
     ./include/handlers
     ./include/client
     ./include/matchengine
+    ./googletest/include
     )
 
 SET(CMAKE_CXX_STANDARD 17)
 
 ADD_EXECUTABLE(Server "")
 ADD_EXECUTABLE(client "")
+ADD_EXECUTABLE(run_tests "")
 
 ADD_SUBDIRECTORY(./src)
 ADD_SUBDIRECTORY(./src/postgres)
 ADD_SUBDIRECTORY(./src/handlers)
 ADD_SUBDIRECTORY(./src/client)
 ADD_SUBDIRECTORY(./src/matchengine)
+ADD_SUBDIRECTORY(./tests)
 
 TARGET_LINK_LIBRARIES(Server PRIVATE Threads::Threads ${Boost_LIBRARIES})
 TARGET_LINK_LIBRARIES(Server PRIVATE ${PostgreSQL_LIBRARIES})
 
 TARGET_LINK_LIBRARIES(client PRIVATE Threads::Threads ${Boost_LIBRARIES})
+
+SET(gtest_force_shared_crt ON)
+SET(INSTALL_GTEST OFF)
+SET(BUILD_GMOCK OFF)
+ADD_SUBDIRECTORY(./googletest)
+TARGET_LINK_LIBRARIES(run_tests PRIVATE Threads::Threads ${Boost_LIBRARIES})
+TARGET_LINK_LIBRARIES(run_tests PRIVATE ${PostgreSQL_LIBRARIES})
+TARGET_LINK_LIBRARIES(run_tests PRIVATE gtest gtest_main)
