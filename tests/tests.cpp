@@ -2,20 +2,8 @@
 
 #include "json.hpp"
 #include "Common.hpp"
-#include "HandlerFactory.h"
-#include "RegisterHandler.h"
-#include "HelloHandler.h"
-#include "OrderHandler.h"
-#include "ActiveOrdersHandler.h"
-#include "BalanceHandler.h"
-#include "SignInHandler.h"
-#include "HistoryHandler.h"
-#include "DealsHandler.h"
-#include "DeleteHandler.h"
-#include "QuotationsHandler.h"
 #include "Engine.h"
 
-HandlerFactory handlerFactory;
 
 TEST(EngineTest, noOrders){
     std::vector<order> sales, purchases;
@@ -150,19 +138,7 @@ TEST(EngineTest, highPriceNoMatchingManyOrders){
 
 int main(int argc, char **argv)
 {
-    DataBase::getDB()->Pool().setConnectionParams("test_server", "server_role", "qwerty1234");
 
-    handlerFactory.addHandler<HelHandler>("HelHandler");
-    handlerFactory.addHandler<RegHandler>("RegHandler");
-    handlerFactory.addHandler<OrderHandler>("OrderHandler");
-    handlerFactory.addHandler<ActiveOrderHandler>("ActiveOrdersHandler");
-    handlerFactory.addHandler<BalanceHandler>("BalanceHandler");
-    handlerFactory.addHandler<SignInHandler>("SignInHandler");
-    handlerFactory.addHandler<HistoryOrderHandler>("HistoryOrderHandler");
-    handlerFactory.addHandler<DealsHandler>("DealsHandler");
-    handlerFactory.addHandler<DeleteHandler>("DeleteHandler");
-    handlerFactory.addHandler<QuotationsHandler>("QuotationsHandler");
-  
   ::testing::InitGoogleTest(&argc, argv);
   
   return RUN_ALL_TESTS();
