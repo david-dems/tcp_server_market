@@ -12,7 +12,7 @@ class QuotationsHandler : public RequestHandler{
     private:
     std::string query_template = R"(
         BEGIN ISOLATION LEVEL READ COMMITTED;  
-        select avg(price) from applications
+        select sum(price * vol) / sum(vol) from applications
         where status = 'active';
         COMMIT; 
     )";
