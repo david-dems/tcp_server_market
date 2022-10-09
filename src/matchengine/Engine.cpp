@@ -111,8 +111,10 @@ std::vector<deal> MatchingEngine::processDeals(std::vector<order> sales, std::ve
     while(it_sales != sales.end() && it_purch != purchases.end()){
         if (it_sales->userid == it_purch->userid){
             if (std::next(it_purch,1) != purchases.end()){
-                backtohead = true;
-                head = it_purch;
+                if (!backtohead){
+                    backtohead = true;
+                    head = it_purch;
+                }
                 it_purch++;
                 continue;
             } else {
@@ -122,20 +124,6 @@ std::vector<deal> MatchingEngine::processDeals(std::vector<order> sales, std::ve
             } 
         }
 
-        if (it_sales->status != "active " && it_purch->status != "active"){
-            it_sales++;
-            it_purch++;
-            continue;
-        }
-
-        if (it_sales->status != "active"){
-            it_sales++;
-            continue;
-        }
-        if (it_purch->status != "active"){
-            it_purch++;
-            continue;
-        }
 
         if (it_sales->price <= it_purch->price){
             deal d;
@@ -210,6 +198,21 @@ std::vector<deal> MatchingEngine::processDeals(std::vector<order> sales, std::ve
                 continue;
             }
         }
+        
+        if (it_sales->status != "active" && it_purch->status != "active"){
+            it_sales++;
+            it_purch++;
+            continue;
+        }
+
+        if (it_sales->status != "active"){
+            it_sales++;
+            continue;
+        }
+        if (it_purch->status != "active"){
+            it_purch++;
+            continue;
+        }
     } 
     
     return std::move(result);
@@ -252,4 +255,5 @@ void MatchingEngine::sendQuery(std::vector<deal> deals){
             PQclear(res);   
         }
     }
+    DataBase::getDB()->Pool().freeConnection(C);
 }
