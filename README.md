@@ -11,8 +11,28 @@ To clone this repository use following command:
 ```
 git clone https://github.com/david-dems/tcp_server_market.git --recursive
 ```
-To build project, it is better to create directory for building, in order to avoid polution of project directory with buikd files.
-After creating a directory, run following commands:
+Exept building a project it also needs particular Database. In current repo there is market.dump. This file contains schema of database for normal functionality of server.
+To start up DB it requres to create role in PostgreSQL, that will be used while trhis server is running.
+Then DB with shoukd be created. And finally use market.dampt to create all relations.
+It can be done like this (for example):
+```
+sudo -su postgres psql
+create database <database_name>
+create user <role_name> WITH PASSWORD '<password>';
+grant all privileges on database <database_name> to <role_name>;
+```
+```
+sudo -su postgres psql <database_name> < ./market.dump
+```
+
+In base directory of project run:
+```
+configurary.sh <database_name> <role_name> <password> <postgres host> <postgres port>
+```
+Use following host and port: "localhost", 5432 or specify it in dependance of PostgreSQL server config.
+
+To build project, it is better to create directory for building (mkdir build), in order to avoid polution of project directory with build files.
+After creating a directory, run following commands in build directory (cd build):
 ```
 cmake ..
 make
