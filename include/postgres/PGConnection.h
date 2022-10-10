@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <libpq-fe.h>
+#include "ServerConfig.h"
 
 class PGConnection{
 public:
@@ -14,12 +15,12 @@ public:
 private:
 
 
-    std::string host = "";
-    int port = 5432;
+    std::string host = DBHOST;
+    int port = DBPORT;
 
-    std::string dbName = "market";
-    std::string usrName = "";
-    std::string usrPass = "";
+    std::string dbName = DBNAME;
+    std::string usrName = ROLE;
+    std::string usrPass = PASS;
 
     std::shared_ptr<PGconn> conn;
 };

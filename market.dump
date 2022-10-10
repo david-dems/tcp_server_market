@@ -1,0 +1,198 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 12.12 (Ubuntu 12.12-0ubuntu0.20.04.1)
+-- Dumped by pg_dump version 12.12 (Ubuntu 12.12-0ubuntu0.20.04.1)
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- Name: applications; Type: TABLE; Schema: public; Owner: server_role
+--
+
+CREATE TABLE public.applications (
+    appid integer NOT NULL,
+    userid integer,
+    vol numeric(12,2),
+    price numeric(15,2),
+    direction character varying(10),
+    status character varying(10),
+    date timestamp without time zone
+);
+
+
+ALTER TABLE public.applications OWNER TO server_role;
+
+--
+-- Name: applications_appid_seq; Type: SEQUENCE; Schema: public; Owner: server_role
+--
+
+CREATE SEQUENCE public.applications_appid_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.applications_appid_seq OWNER TO server_role;
+
+--
+-- Name: applications_appid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: server_role
+--
+
+ALTER SEQUENCE public.applications_appid_seq OWNED BY public.applications.appid;
+
+
+--
+-- Name: balance; Type: TABLE; Schema: public; Owner: server_role
+--
+
+CREATE TABLE public.balance (
+    userid integer NOT NULL,
+    usd numeric(15,2),
+    rub numeric(15,2)
+);
+
+
+ALTER TABLE public.balance OWNER TO server_role;
+
+--
+-- Name: deals; Type: TABLE; Schema: public; Owner: server_role
+--
+
+CREATE TABLE public.deals (
+    dealid integer NOT NULL,
+    sellerid integer,
+    buyerid integer,
+    vol numeric(15,2),
+    price numeric(15,2),
+    date timestamp without time zone
+);
+
+
+ALTER TABLE public.deals OWNER TO server_role;
+
+--
+-- Name: deals_dealid_seq; Type: SEQUENCE; Schema: public; Owner: server_role
+--
+
+CREATE SEQUENCE public.deals_dealid_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.deals_dealid_seq OWNER TO server_role;
+
+--
+-- Name: deals_dealid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: server_role
+--
+
+ALTER SEQUENCE public.deals_dealid_seq OWNED BY public.deals.dealid;
+
+
+--
+-- Name: users; Type: TABLE; Schema: public; Owner: server_role
+--
+
+CREATE TABLE public.users (
+    userid integer NOT NULL,
+    firstname character varying(30),
+    lastname character varying(30),
+    login character varying(30),
+    password character varying(30)
+);
+
+
+ALTER TABLE public.users OWNER TO server_role;
+
+--
+-- Name: users_userid_seq; Type: SEQUENCE; Schema: public; Owner: server_role
+--
+
+CREATE SEQUENCE public.users_userid_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.users_userid_seq OWNER TO server_role;
+
+--
+-- Name: users_userid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: server_role
+--
+
+ALTER SEQUENCE public.users_userid_seq OWNED BY public.users.userid;
+
+
+--
+-- Name: applications appid; Type: DEFAULT; Schema: public; Owner: server_role
+--
+
+ALTER TABLE ONLY public.applications ALTER COLUMN appid SET DEFAULT nextval('public.applications_appid_seq'::regclass);
+
+
+--
+-- Name: deals dealid; Type: DEFAULT; Schema: public; Owner: server_role
+--
+
+ALTER TABLE ONLY public.deals ALTER COLUMN dealid SET DEFAULT nextval('public.deals_dealid_seq'::regclass);
+
+
+--
+-- Name: users userid; Type: DEFAULT; Schema: public; Owner: server_role
+--
+
+ALTER TABLE ONLY public.users ALTER COLUMN userid SET DEFAULT nextval('public.users_userid_seq'::regclass);
+
+
+--
+-- Name: applications applications_pkey; Type: CONSTRAINT; Schema: public; Owner: server_role
+--
+
+ALTER TABLE ONLY public.applications
+    ADD CONSTRAINT applications_pkey PRIMARY KEY (appid);
+
+
+--
+-- Name: balance balance_pkey; Type: CONSTRAINT; Schema: public; Owner: server_role
+--
+
+ALTER TABLE ONLY public.balance
+    ADD CONSTRAINT balance_pkey PRIMARY KEY (userid);
+
+
+--
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: server_role
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (userid);
+
+
+--
+-- PostgreSQL database dump complete
+--
+
