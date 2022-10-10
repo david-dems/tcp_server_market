@@ -5,6 +5,10 @@ std::string MakeOrderProcessor::process(tcp::socket& s){
 
     std::cin >> vol >> price >> dir;
 
+    if (dir != "purchase" || dir != "sale"){
+        return "Invalid direction of order";
+    }
+
     nlohmann::json req;
     req["UserId"] = my_id;
     req["ReqType"] = Requests::Order;

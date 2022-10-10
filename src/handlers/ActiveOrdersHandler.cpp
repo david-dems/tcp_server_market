@@ -52,7 +52,7 @@ std::string ActiveOrderHandler::makeReply(nlohmann::json j){
             }
             PQclear(res);
         }
-        reply["IdVolPriceDir"] = idVolPriceDir;
+        reply["IdVolPriceDir"] = std::move(idVolPriceDir);
 
     } catch (std::logic_error const& e) {
         std::cerr << e.what(); 

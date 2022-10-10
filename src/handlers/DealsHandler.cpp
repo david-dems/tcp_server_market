@@ -65,7 +65,7 @@ std::string DealsHandler::makeReply(nlohmann::json j){
             }
             PQclear(res);
         }
-        reply["Data"] = data;
+        reply["Data"] = std::move(data);
     
     } catch (std::logic_error const& e) {
         std::cerr << e.what(); 
