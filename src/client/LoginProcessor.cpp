@@ -10,11 +10,15 @@ std::string LoginProcessor::process(tcp::socket& s){
     j["Login"] = login;
     j["Password"] = pswd;
 
-    SendMessage(s, j);
-    auto rep = ReadMessage(s);
-    if (rep["Status"].get<std::string>() == "ok"){
-        std::cout << rep["Message"].get<std::string>() << std::endl;
-        return rep["UserId"].get<std::string>();
-    }
-    return std::move(rep["UserId"].get<std::string>());
+    try{
+        SendMessage(s, j);
+        auto rep = ReadMessage(s);
+        if (rep["Status"].get<std::string>() == "ok"){
+            std::cout << rep["Message"].get<std::string>() << std::endl;
+            return rep["UserId"].get<std::string>();
+        }
+        return std::move(rep["UserId"].get<std::string>());
+    } catch (std::exception const& ex){
+        return ex.what();        
+    } 
 }

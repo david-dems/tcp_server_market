@@ -7,16 +7,20 @@ std::string HistoryProcessor::process(tcp::socket& s){
     req["UserId"] = my_id;
     req["ReqType"] = Requests::History;
     
-    SendMessage(s, req);
-    auto resp = ReadMessage(s);
+    try{
+        SendMessage(s, req);
+        auto resp = ReadMessage(s);
     
-    auto idVolPriceDir = resp["IdVolPriceDir"].get<std::vector<std::tuple<std::string, std::string, std::string, std::string>>>();
+        auto idVolPriceDir = resp["IdVolPriceDir"].get<std::vector<std::tuple<std::string, std::string, std::string, std::string>>>();
 
-    std::string reply;
+        std::string reply;
 
-    for (auto& [id, vol, price, dir] : idVolPriceDir){
-        reply += "USD: " + vol + " Price: " + price + " " + dir + "\n";
+        for (auto& [id, vol, price, dir] : idVolPriceDir){
+            reply += "USD: " + vol + " Price: " + price + " " + dir + "\n";
+        }  
+    
+        return std::move(reply);
+    } catch (std::exception const& ex){
+        return ex.what();
     }
-    
-    return std::move(reply);
 }

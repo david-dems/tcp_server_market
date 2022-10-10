@@ -6,6 +6,7 @@
 #include <boost/asio.hpp>
 #include "json.hpp"
 #include "Common.hpp"
+#include <stdexcept>
 
 using boost::asio::ip::tcp;
 
@@ -15,6 +16,13 @@ public:
    void setId(std::string id){my_id = id;};
 
 protected:   
+   std::string ProcessErrors(nlohmann::json j){
+      if (j["Error"] == nullptr)
+         return "ok";
+
+      return j["Error"].get<std::string>();
+   }
+
    void SendMessage(
       tcp::socket& aSocket,
       nlohmann::json &j
@@ -30,6 +38,10 @@ protected:
       std::istream is(&b);
       std::string line(std::istreambuf_iterator<char>(is), {});
       auto j = nlohmann::json::parse(line);
+      std::string error = ProcessErrors(j);
+      if (error != "ok"){
+         throw std::logic_error(error);
+      }
       return j;
    }
 

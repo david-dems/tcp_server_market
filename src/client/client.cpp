@@ -117,7 +117,7 @@ int main(){
         }
 
     } 
-    catch(std::exception e){
+    catch(std::exception const& e){
         std::cout << "Exception: " << e.what() << std::endl;
     }
 

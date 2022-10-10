@@ -4,45 +4,61 @@
 #include <iostream>
 
 std::string SignInHandler::makeReply(nlohmann::json j){
-    auto C = DataBase::getDB()->Pool().getConnection();
-    std::string query;
-
+    nlohmann::json reply;
     std::string login, password;
-    login     = j["Login"].get<std::string>();
-    password  = j["Password"].get<std::string>();
+   
+    try{
+        login     = j["Login"].get<std::string>();
+        password  = j["Password"].get<std::string>();
+    } catch (nlohmann::json::exception const& ex){
+        std::cerr << ex.what() << std::endl;
+        reply["Error"] = "bad json, null value instead of string! ";
+        return std::move(reply.dump());
+    } catch (std::exception const& e){
+        std::cerr << e.what();
+        reply["Error"] = "Server error";
+        return reply.dump();
+    } 
     
     boost::format fmt_query = boost::format(query_template) % login % password;
-    query = fmt_query.str();
-    PQsendQuery(C->connection().get(), query.c_str());
+    std::string query = fmt_query.str();
     
-    char *ID;
-    int count = 0;
+    auto C = DataBase::getDB()->Pool().getConnection();
+        std::string ID;
+        int count = 0;
+    try{
+        PQsendQuery(C->connection().get(), query.c_str());
 
-    while(auto res = PQgetResult(C->connection().get())){
-        if (PQresultStatus(res) == PGRES_TUPLES_OK && PQntuples(res)) {
-            ID = PQgetvalue (res, 0, 0);
-            count = PQntuples(res);
+        while(auto res = PQgetResult(C->connection().get())){
+            if (PQresultStatus(res) == PGRES_TUPLES_OK && PQntuples(res)) {
+                ID = PQgetvalue (res, 0, 0);
+                count = PQntuples(res);
+            }
+
+            if (PQresultStatus(res) == PGRES_FATAL_ERROR){
+                throw std::logic_error(PQresultErrorMessage(res));
+            }
+
+            PQclear(res);
         }
-
-        if (PQresultStatus(res) == PGRES_FATAL_ERROR){
-            std::cout<< PQresultErrorMessage(res)<<std::endl;
+        if (count == 0){
+            reply["Status"] = "err";
+            reply["Message"] = "User is not registered.";
+            reply["UserId"] = "null";
+        } else {
+            reply["Status"] = "ok";
+            reply["Message"] = "Authorized";
+            reply["UserId"] = ID;
         }
-
-        PQclear(res);
+    } catch (std::logic_error const& e) {
+        std::cerr << e.what() << std::endl;
+        reply["Error"] = "Data base error";
+    } catch (std::exception const& e){
+        std::cerr << e.what();
+        reply["Error"] = "Server error";
     }
+    
+    DataBase::getDB()->Pool().freeConnection(C);
 
-    nlohmann::json resp;
-    std::string id(ID);
-
-    if (count == 0){
-        resp["Status"] = "err";
-        resp["Message"] = "User is not registered.";
-        resp["UserId"] = "null";
-    } else {
-        resp["Status"] = "ok";
-        resp["Message"] = "Authorized";
-        resp["UserId"] = id;
-    }
-
-    return std::move(resp.dump());
+    return std::move(reply.dump());
 }

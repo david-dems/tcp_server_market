@@ -11,6 +11,8 @@ class RegHandler : public RequestHandler{
     std::string makeReply(nlohmann::json j);
 
     private:
+    bool isLoginAvailable(std::string login);
+
     std::string insert_query_template = R"(
         BEGIN ISOLATION LEVEL READ COMMITTED; 
         

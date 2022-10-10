@@ -6,7 +6,11 @@ std::string HelloProcessor::process(tcp::socket& s){
     req["ReqType"] = Requests::Hello;
 
     SendMessage(s, req);
-    auto rep = ReadMessage(s);
-
-    return std::move(rep["Name"].get<std::string>());
+    try{
+        auto rep = ReadMessage(s);
+        return std::move(rep["Name"].get<std::string>());
+    } catch(std::exception const& ex){
+        return ex.what();
+    }
+    
 }

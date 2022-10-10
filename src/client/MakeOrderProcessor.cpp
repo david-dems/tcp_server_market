@@ -1,19 +1,22 @@
 #include "MakeOrderProcessor.h"
 
 std::string MakeOrderProcessor::process(tcp::socket& s){
-int vol, price;
-    std::string dir;
+    std::string vol, price, dir;
 
     std::cin >> vol >> price >> dir;
 
     nlohmann::json req;
     req["UserId"] = my_id;
     req["ReqType"] = Requests::Order;
-    req["vol"] = vol;
-    req["price"] = price;
-    req["direction"] = dir;
+    req["Vol"] = vol;
+    req["Price"] = price;
+    req["Direction"] = dir;
                 
-    SendMessage(s, req);
-    auto resp = ReadMessage(s);
-    return std::move(resp["Message"].get<std::string>());
+    try{
+        SendMessage(s, req);
+        auto resp = ReadMessage(s);
+        return std::move(resp["Message"].get<std::string>());
+    } catch(std::exception const& ex){
+        return ex.what();
+    }
 }

@@ -2,51 +2,57 @@
 #include <iostream>
 
 std::string OrderHandler::makeReply(nlohmann::json j){
-    //Check if the user in DB
+    nlohmann::json reply;
+    std::string userid;
+    std::string vol, price, dir;
+
+    try{
+        userid = j["UserId"].get<std::string>();
+        vol = j["Vol"].get<std::string>();
+        price = j["Price"].get<std::string>();
+        dir = j["Direction"].get<std::string>();
+        if (!isUserRegistred(userid)){
+            throw std::logic_error("Registration required!");
+        }
+    } catch (nlohmann::json::exception const& ex){
+        std::cerr << ex.what() << std::endl;
+        reply["Error"] = "bad json, null value instead of string! ";
+        return std::move(reply.dump());
+    } catch (std::logic_error const& e){
+        reply["Error"] = e.what();
+        return reply.dump();
+    } catch (std::exception const& e){
+        std::cerr << e.what();
+        reply["Error"] = "Server error";
+        return reply.dump();
+    }  
+
+
+    auto fmt = boost::format(query_template) % userid % vol % price % dir % "active" % "CURRENT_TIMESTAMP";
+    std::string query = fmt.str();
 
     auto C = DataBase::getDB()->Pool().getConnection();
 
-    std::string query;
-    auto fmt = boost::format(query_template_check_user) % j["UserId"].get<std::string>(); 
-    query = fmt.str();
-
-    PQsendQuery(C->connection().get(), query.c_str());
-
-    char *count;
-
-    while(auto res = PQgetResult(C->connection().get())){
-        if (PQresultStatus(res) == PGRES_TUPLES_OK && PQntuples(res)) {
-            count = PQgetvalue (res, 0, 0);
+    try {
+        
+        PQsendQuery(C->connection().get(), query.c_str());
+        while(auto res = PQgetResult(C->connection().get())){
+            if (PQresultStatus(res) == PGRES_FATAL_ERROR){
+                throw std::logic_error(PQresultErrorMessage(res));
+            }
+            PQclear(res);
         }
+        reply["Message"] = "Order is published";
 
-        if (PQresultStatus(res) == PGRES_FATAL_ERROR){
-            std::cout<< PQresultErrorMessage(res)<<std::endl;
-        }
-
-        PQclear(res);
-    }
-
-    if (count == 0)
-        return std::move("This user is not registred");
-
-    std::string reply_str = "Order has been published!";
-    fmt = boost::format(query_template) % j["UserId"].get<std::string>() % j["vol"] % j["price"] % j["direction"].get<std::string>() % "active" % "CURRENT_TIMESTAMP";
-
-    query = fmt.str();
-
-    PQsendQuery(C->connection().get(), query.c_str());
-    while(auto res = PQgetResult(C->connection().get())){
-        if (PQresultStatus(res) == PGRES_FATAL_ERROR){
-            std::cout<< PQresultErrorMessage(res)<<std::endl;
-            reply_str = "error";
-        }
-        PQclear(res);
+    } catch (std::logic_error const& e) {
+        std::cerr << e.what(); 
+        reply["Error"] = "Data base error";
+    } catch (std::exception const& e){
+        std::cerr << e.what();
+        reply["Error"] = "Server error";
     }
 
     DataBase::getDB()->Pool().freeConnection(C);
-
-    nlohmann::json reply;
-    reply["Message"] = std::move(reply_str);
 
     return std::move(reply.dump());        
 }

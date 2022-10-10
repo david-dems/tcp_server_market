@@ -7,7 +7,6 @@ std::string RegistrationProcessor::process(tcp::socket& s){
     std::cin >> firstName >> lastName >> login >>  pswd;
 
     nlohmann::json j;
-    j["UserId"] = "0";
     j["ReqType"] = Requests::Registration;
     j["FirstName"] = firstName;
     j["LastName"] = lastName;
@@ -15,8 +14,17 @@ std::string RegistrationProcessor::process(tcp::socket& s){
     j["Password"] = pswd;
 
     // Для регистрации Id не нужен, заполним его нулём
-    SendMessage(s, j);
-    auto rep = ReadMessage(s);
-    return std::move(rep["UserId"].get<std::string>());
+    try
+    {
+        SendMessage(s, j);
+        auto rep = ReadMessage(s);
+        return std::move(rep["UserId"].get<std::string>());
+    }
+    catch(const std::exception& e)
+    {
+        std::cout << e.what() << std::endl;
+        return "null";
+    }
+    
 }
 

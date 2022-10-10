@@ -6,8 +6,12 @@ std::string QuotationProcessor::process(tcp::socket& s){
     req["UserId"] = my_id;
     req["ReqType"] = Requests::Quotations;
 
-    SendMessage(s, req);
-    auto rep = ReadMessage(s);
+    try{
+        SendMessage(s, req);
+        auto rep = ReadMessage(s);
 
-    return std::move(rep["Quotation"].get<std::string>());
+        return std::move(rep["Quotation"].get<std::string>());
+    } catch(std::exception const& ex){
+        return ex.what();
+    }
 }

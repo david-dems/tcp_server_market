@@ -6,11 +6,16 @@ std::string BalanceProcessor::process(tcp::socket& s){
     req["UserId"] = my_id;
     req["ReqType"] = Requests::Balance;
     
-    SendMessage(s, req);
-    auto resp = ReadMessage(s);
-    
-    auto usd = resp["USD"].get<std::string>();
-    auto rub = resp["RUB"].get<std::string>();
-    
-    return std::move("USD: " + usd + " RUB : " + rub);
+    try{
+
+        SendMessage(s, req);
+        auto resp = ReadMessage(s);
+        auto usd = resp["USD"].get<std::string>();
+        auto rub = resp["RUB"].get<std::string>();
+        
+        return std::move("USD: " + usd + " RUB : " + rub);
+
+    } catch (std::exception const& ex){
+        return ex.what();
+    }
 }
