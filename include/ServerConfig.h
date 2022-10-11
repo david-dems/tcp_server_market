@@ -1,5 +1,5 @@
-#define DBNAME ""
-#define ROLE   ""
-#define PASS   ""
-#define DBHOST ""
-#define DBPORT  
+#define DBNAME "market"
+#define ROLE   "server_role"
+#define PASS   "qwerty1234"
+#define DBHOST "localhost"
+#define DBPORT   5432

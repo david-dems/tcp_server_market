@@ -16,6 +16,7 @@ std::string BalanceProcessor::process(tcp::socket& s){
         return std::move("USD: " + usd + " RUB : " + rub);
 
     } catch (std::exception const& ex){
-        return ex.what();
+        std::cerr << ex.what() << std::endl;
+        return "null";
     }
 }

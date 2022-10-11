@@ -21,6 +21,7 @@ std::string MakeOrderProcessor::process(tcp::socket& s){
         auto resp = ReadMessage(s);
         return std::move(resp["Message"].get<std::string>());
     } catch(std::exception const& ex){
-        return ex.what();
+        std::cerr << ex.what() << std::endl;
+        return "null";
     }
 }

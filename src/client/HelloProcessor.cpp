@@ -10,7 +10,8 @@ std::string HelloProcessor::process(tcp::socket& s){
         auto rep = ReadMessage(s);
         return std::move(rep["Name"].get<std::string>());
     } catch(std::exception const& ex){
-        return ex.what();
+        std::cerr << ex.what() << std::endl;
+        return "null";
     }
     
 }

@@ -19,6 +19,7 @@ std::string LoginProcessor::process(tcp::socket& s){
         }
         return std::move(rep["UserId"].get<std::string>());
     } catch (std::exception const& ex){
-        return ex.what();        
+        std::cerr << ex.what() << std::endl;
+        return "null";
     } 
 }

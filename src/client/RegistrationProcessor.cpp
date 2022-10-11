@@ -22,7 +22,7 @@ std::string RegistrationProcessor::process(tcp::socket& s){
     }
     catch(const std::exception& e)
     {
-        std::cout << e.what() << std::endl;
+        std::cerr << e.what() << std::endl;
         return "null";
     }
     

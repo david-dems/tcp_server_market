@@ -12,6 +12,7 @@ std::string QuotationProcessor::process(tcp::socket& s){
 
         return std::move(rep["Quotation"].get<std::string>());
     } catch(std::exception const& ex){
-        return ex.what();
+        std::cerr << ex.what() << std::endl;
+        return "null";
     }
 }
