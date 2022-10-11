@@ -17,3 +17,5 @@ bin
 todo.txt
 settings.json
 .vscode
+
+client/resources
