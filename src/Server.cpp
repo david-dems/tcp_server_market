@@ -58,18 +58,36 @@ public:
         {
             data_[bytes_transferred] = '\0';
 
-            // Парсим json, который пришёл нам в сообщении.
-            auto j = nlohmann::json::parse(data_);
-            std::string reqType = j["ReqType"];
-           
-            //Создаем необходимый для обработки реквеста колбэк 
-            RequestHandler *h = handlerFactory.make(reqType + "Handler");
+            std::string reply;
+
+            try{ 
+                // Парсим json, который пришёл нам в сообщении.
+                auto j = nlohmann::json::parse(data_);
+                if (j["ReqType"] == nullptr){
+                    throw std::logic_error("Bad request type");
+                }
+                std::string reqType = j["ReqType"];
+
+                //Создаем необходимый для обработки реквеста колбэк 
+                RequestHandler *h = handlerFactory.make(reqType + "Handler");
+                reply = h->makeReply(std::move(j));
+
+                // после использования нужно удалить хендлер из-за new в фабрике
+                delete h; 
+
+            } catch (std::logic_error const& e) {
+                nlohmann::json rep;
+                rep["Error"] = "Bad ReqType";
+                std::cerr << e.what();
+                reply = rep.dump();
+            } catch(std::exception const& e) {
+                nlohmann::json rep;
+                rep["Error"] = "Server Error";
+                std::cerr << e.what();
+                reply = rep.dump();
+            }
             
-            std::string reply = h->makeReply(std::move(j));
             reply += "\n";
-            
-            delete h; // после использования нужно удалить хендлер из-за new в фабрике
-            
 
             boost::asio::async_write(socket_, 
                 boost::asio::buffer(reply, reply.size()),
