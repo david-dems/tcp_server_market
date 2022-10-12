@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <string>
+#include <tuple>
 
 namespace Ui {
 class RegistrationDialog;
@@ -17,10 +18,17 @@ public:
     ~RegistrationDialog();
 
     std::string getUserId();
+    std::tuple<
+        std::string,
+        std::string,
+        std::string,
+        std::string> getFLLP();
 
 private:
     Ui::RegistrationDialog *ui;
     std::string usrId;
+
+
 public slots:
     void onSignIn();
     void onOk();

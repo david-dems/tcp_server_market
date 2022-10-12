@@ -31,3 +31,16 @@ void RegistrationDialog::onOk(){
 std::string RegistrationDialog::getUserId(){
     return usrId;
 }
+
+std::tuple<
+        std::string,
+        std::string,
+        std::string,
+        std::string> RegistrationDialog::getFLLP(){
+        return {
+            ui->firstName->text().toStdString(),
+            ui->lastName->text().toStdString(),
+            ui->login->text().toStdString(),
+            ui->password->text().toStdString(),
+        };
+    }

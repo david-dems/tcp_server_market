@@ -30,6 +30,8 @@ SET(GUI_CLIENT_SOURCE
     ${CMAKE_CURRENT_SOURCE_DIR}/ForGuiLoginProcessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ForGuiDeleteProcessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ForGuiOrderProcessor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ForGuiRegistrationProcessor.cpp
+
 )
 
 TARGET_SOURCES(client PUBLIC ${CLIENT_SOURCE})

@@ -2,6 +2,8 @@
 #include "ui_logindialog.h"
 #include <QDebug>
 
+#include "commonflags.h"
+
 LogInDialog::LogInDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::LogInDialog)
@@ -26,7 +28,7 @@ void LogInDialog::onOk(){
 }
 
 void LogInDialog::startRegistration(){
-    emit done(20);
+    emit done(Flags::Registration);
 }
 
 std::tuple<std::string, std::string> LogInDialog::getLP(){

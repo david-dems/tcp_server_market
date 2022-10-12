@@ -2,13 +2,17 @@
 
 #include "EventProcessorFactory.h"
 #include "ForGuiLoginProcessor.h"
+#include "ForGuiRegistrationProcessor.h"
 #include "RegistrationProcessor.h"
+
+#include "commonflags.h"
+#include <tuple>
 
 
 Authorizator::Authorizator(){
     factory = new EventProcessorFactory;
     factory->addProcessor<ForGuiLoginProcessor>("login");
-    //factory->addProcessor<ForGuiRegistrationProcessor>("registration");
+    factory->addProcessor<ForGuiRegistrationProcessor>("registration");
 }
 
 Authorizator::~Authorizator(){
@@ -43,10 +47,16 @@ std::string Authorizator::waitForAuth(){
             id = reply;
             break;
         }
-        case 20:{
+        case Flags::Registration:{
             regDialog = new RegistrationDialog;
             regDialog->exec();
+            auto [firstName, lastName, login, password] = regDialog->getFLLP();
+            auto proc = factory->makeProcessor("registration");
+            static_cast<ForGuiRegistrationProcessor*>(proc)->setFLLP(firstName, lastName, login, password);
+            auto reply = proc->process(*sock);
+            delete proc;
             delete regDialog;
+            id = reply;
             break;
         }
         default:
