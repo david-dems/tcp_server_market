@@ -17,6 +17,8 @@ set(MOC_SOURCE
   ./include/logindialog.h
   ./include/registrationdialog.h
   ./include/deletedialog.h
+  ./include/Requester.h
+  ./include/Authorizator.h
 )
 
 set(UI_SOURCE
@@ -26,7 +28,7 @@ set(UI_SOURCE
   ./forms/deletedialog.ui
 )
 
-find_package(Qt5 COMPONENTS Widgets REQUIRED)
+find_package(Qt5 COMPONENTS Widgets Gui REQUIRED)
 
 qt5_wrap_cpp(MOC_HEADERS ${MOC_SOURCE})
 qt5_wrap_ui(UI_HEADERS ${UI_SOURCE})
@@ -35,4 +37,8 @@ add_executable(Client ${MOC_HEADERS} ${UI_HEADERS})
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-target_link_libraries(Client PRIVATE Qt5::Widgets)
+FIND_PACKAGE(Boost 1.40 COMPONENTS system REQUIRED)
+find_package(Threads REQUIRED)
+
+target_link_libraries(Client PRIVATE Qt5::Widgets Qt5::Gui)
+target_link_libraries(Client PRIVATE Threads::Threads ${Boost_LIBRARIES})

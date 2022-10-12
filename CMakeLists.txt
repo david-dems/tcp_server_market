@@ -24,6 +24,7 @@ ADD_EXECUTABLE(Server "")
 ADD_EXECUTABLE(client "")
 ADD_EXECUTABLE(run_tests "")
 
+ADD_SUBDIRECTORY(./client)
 ADD_SUBDIRECTORY(./src)
 ADD_SUBDIRECTORY(./src/postgres)
 ADD_SUBDIRECTORY(./src/handlers)

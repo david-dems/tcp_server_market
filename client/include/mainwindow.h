@@ -6,6 +6,12 @@
 #include "registrationdialog.h"
 #include "deletedialog.h"
 #include <string>
+#include <QSharedMemory>
+#include <QGraphicsScene>
+#include <QMutexLocker>
+#include <QMutex> 
+
+#include "commonflags.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -19,19 +25,26 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    std::vector<std::string> *upds;    
+    void setMutex(QMutex* mutex_);
+
 private:
     Ui::MainWindow *ui;
 
-    LogInDialog *logDialog;
-    RegistrationDialog *regDialog;
     DeleteDialog *delDialog;
 
-    std::string authorize();
+    QGraphicsScene *order_scene, *deals_scene;
+
+    QMutex *mutex;
 
 
 public slots:
-    void closeDialog();
-    void registrate();
     void onDelete();
+    void onUpdate(int val);
+    void onPublish();
+signals:
+    void deleteSignal(int);
+    void publishSignal(int, int, int);
+
 };
 #endif // MAINWINDOW_H

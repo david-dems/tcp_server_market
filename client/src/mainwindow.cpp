@@ -3,6 +3,11 @@
 
 #include <QDebug>
 #include <iostream>
+#include <QBuffer>
+#include <QDataStream>
+#include <QString>
+#include <QFont>
+#include <QGraphicsTextItem>
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -11,53 +16,61 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     
-    connect(ui->pushButton_2, &QPushButton::clicked, this, &MainWindow::onDelete);
+    connect(ui->delete_2, &QPushButton::clicked, this, &MainWindow::onDelete);
+    connect(ui->publish, &QPushButton::clicked, this, &MainWindow::onPublish);
 
-    while(authorize() == "");
-
+    order_scene = new QGraphicsScene;
+    deals_scene = new QGraphicsScene;
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
-}
-
-void MainWindow::closeDialog(){
-    qDebug() << "rejected";
-}
-
-std::string MainWindow::authorize(){
-    std::string login = "";
-
-    logDialog = new LogInDialog;
-    switch(logDialog->exec()){
-        case QDialog::Rejected:
-            delete logDialog;
-            exit(0);
-            break;
-        case QDialog::Accepted:
-            logDialog->done(0);
-            login = "qwerty";
-            break;
-        case 20:
-            regDialog = new RegistrationDialog;
-            regDialog->exec();
-            delete regDialog;
-            break;
-        default:
-            break;
-    }
-    delete logDialog;
-
-    return login;
-}
-
-void MainWindow::registrate(){
-    qDebug() << "registraaate!";
+    delete order_scene;
+    delete deals_scene;
 }
 
 void MainWindow::onDelete(){
     delDialog = new DeleteDialog;
-    delDialog->exec();
+    switch (delDialog->exec()){
+        case QDialog::Accepted:{
+            int appid = delDialog->getAppId();
+            emit deleteSignal(appid);
+            break;
+        }
+        default:{
+            break;
+        }
+    }
     delete delDialog;
+}
+
+void MainWindow::onUpdate(int val){
+    QMutexLocker locker(mutex);
+    ui->balance->setText(QString::fromStdString((*upds)[1]));
+
+    QFont font;
+    font.setPixelSize(20);
+    font.setBold(false);
+    font.setFamily("Times");
+
+    order_scene->clear();
+    deals_scene->clear();
+    order_scene->addText(QString::fromStdString((*upds)[2]), font)->setDefaultTextColor(Qt::white);
+    deals_scene->addText(QString::fromStdString((*upds)[4]), font)->setDefaultTextColor(Qt::white);
+    ui->orderList->setScene(order_scene);
+    ui->dealsList->setScene(deals_scene);
+    ui->orderList->show();
+    ui->dealsList->show();
+
+    ui->quotation->setText(QString::fromStdString((*upds)[5]));
+}
+
+
+void MainWindow::setMutex(QMutex* mutex_){
+    mutex = mutex_;
+}
+
+void MainWindow::onPublish(){
+    emit publishSignal(ui->usd->text().toInt(), ui->rub->text().toInt(), ui->dir->currentIndex());
 }

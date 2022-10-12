@@ -42,20 +42,25 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="Orders">
      <attribute name="title">
       <string>Active Orders</string>
      </attribute>
-     <widget class="QListWidget" name="listWidget">
+     <widget class="QGraphicsView" name="orderList">
       <property name="geometry">
        <rect>
         <x>0</x>
         <y>0</y>
         <width>801</width>
-        <height>271</height>
+        <height>281</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>16</pointsize>
+       </font>
       </property>
      </widget>
     </widget>
@@ -63,13 +68,13 @@
      <attribute name="title">
       <string>Complited Deals</string>
      </attribute>
-     <widget class="QListWidget" name="listWidget_2">
+     <widget class="QGraphicsView" name="dealsList">
       <property name="geometry">
        <rect>
         <x>0</x>
         <y>0</y>
         <width>801</width>
-        <height>271</height>
+        <height>281</height>
        </rect>
       </property>
      </widget>
@@ -78,7 +83,7 @@
    <widget class="QPushButton" name="publish">
     <property name="geometry">
      <rect>
-      <x>670</x>
+      <x>680</x>
       <y>360</y>
       <width>111</width>
       <height>31</height>
@@ -88,7 +93,7 @@
      <string>PushButton</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_2">
+   <widget class="QPushButton" name="delete_2">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -104,22 +109,27 @@
    <widget class="QComboBox" name="dir">
     <property name="geometry">
      <rect>
-      <x>550</x>
+      <x>560</x>
       <y>360</y>
       <width>101</width>
       <height>31</height>
      </rect>
     </property>
-   </widget>
-   <widget class="QTextEdit" name="usd">
-    <property name="geometry">
-     <rect>
-      <x>200</x>
-      <y>360</y>
-      <width>131</width>
-      <height>31</height>
-     </rect>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
     </property>
+    <item>
+     <property name="text">
+      <string>Sale</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Purchase</string>
+     </property>
+    </item>
    </widget>
    <widget class="QLabel" name="label">
     <property name="geometry">
@@ -175,16 +185,6 @@
      <string>RUB</string>
     </property>
    </widget>
-   <widget class="QTextEdit" name="rub">
-    <property name="geometry">
-     <rect>
-      <x>400</x>
-      <y>360</y>
-      <width>131</width>
-      <height>31</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QLabel" name="label_4">
     <property name="geometry">
      <rect>
@@ -208,9 +208,14 @@
      <rect>
       <x>120</x>
       <y>310</y>
-      <width>131</width>
+      <width>651</width>
       <height>31</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
     </property>
     <property name="text">
      <string>TextLabel</string>
@@ -225,8 +230,43 @@
       <height>41</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
     <property name="text">
      <string>TextLabel</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="usd">
+    <property name="geometry">
+     <rect>
+      <x>190</x>
+      <y>360</y>
+      <width>141</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="rub">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>360</y>
+      <width>141</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
     </property>
    </widget>
   </widget>

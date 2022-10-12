@@ -22,11 +22,13 @@ void LogInDialog::onCancel(){
 }
 
 void LogInDialog::onOk(){
-    qDebug() << ui->login->text();
-    qDebug() << ui->password->text();
     emit accept();
 }
 
 void LogInDialog::startRegistration(){
     emit done(20);
+}
+
+std::tuple<std::string, std::string> LogInDialog::getLP(){
+    return {ui->login->text().toStdString(), ui->password->text().toStdString()};
 }

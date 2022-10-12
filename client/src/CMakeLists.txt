@@ -6,6 +6,8 @@ set(SOURCE
     ${CMAKE_CURRENT_SOURCE_DIR}/logindialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/registrationdialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/deletedialog.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Requester.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Authorizator.cpp
 )
 
 target_sources(Client PUBLIC ${SOURCE})

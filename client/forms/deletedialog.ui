@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>593</width>
-    <height>300</height>
+    <height>208</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,8 +16,8 @@
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">
     <rect>
-     <x>210</x>
-     <y>250</y>
+     <x>200</x>
+     <y>140</y>
      <width>171</width>
      <height>32</height>
     </rect>
@@ -32,23 +32,10 @@
   <widget class="QLabel" name="ordersList">
    <property name="geometry">
     <rect>
-     <x>30</x>
-     <y>70</y>
-     <width>531</width>
-     <height>111</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>TextLabel</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_2">
-   <property name="geometry">
-    <rect>
-     <x>30</x>
-     <y>10</y>
-     <width>161</width>
-     <height>31</height>
+     <x>90</x>
+     <y>50</y>
+     <width>411</width>
+     <height>41</height>
     </rect>
    </property>
    <property name="font">
@@ -57,14 +44,14 @@
     </font>
    </property>
    <property name="text">
-    <string>Active orders:</string>
+    <string>Type Id of order, ypu want to delete below</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_3">
    <property name="geometry">
     <rect>
-     <x>200</x>
-     <y>210</y>
+     <x>190</x>
+     <y>100</y>
      <width>81</width>
      <height>41</height>
     </rect>
@@ -78,11 +65,11 @@
     <string>Order ID:</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="lineEdit">
+  <widget class="QLineEdit" name="appId">
    <property name="geometry">
     <rect>
-     <x>292</x>
-     <y>220</y>
+     <x>282</x>
+     <y>110</y>
      <width>121</width>
      <height>23</height>
     </rect>

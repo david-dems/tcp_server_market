@@ -12,3 +12,7 @@ DeleteDialog::~DeleteDialog()
 {
     delete ui;
 }
+
+int DeleteDialog::getAppId(){
+    return ui->appId->text().toInt();
+}

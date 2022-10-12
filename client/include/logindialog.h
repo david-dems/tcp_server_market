@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QAbstractButton>
+#include <tuple>
 
 namespace Ui {
 class LogInDialog;
@@ -15,6 +16,8 @@ class LogInDialog : public QDialog
 public:
     explicit LogInDialog(QWidget *parent = nullptr);
     ~LogInDialog();
+    std::tuple<std::string, std::string> getLP();
+
 
 private:
     Ui::LogInDialog *ui;

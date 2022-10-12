@@ -1,14 +1,6 @@
-#include "MakeOrderProcessor.h"
+#include "ForGuiOrderProcessor.h"
 
-std::string MakeOrderProcessor::process(tcp::socket& s){
-    std::string vol, price, dir;
-
-    std::cin >> vol >> price >> dir;
-
-    if (dir != "purchase" && dir != "sale"){
-        return "Invalid direction of order";
-    }
-
+std::string ForGuiOrderProcessor::process(tcp::socket& s){
     nlohmann::json req;
     req["UserId"] = my_id;
     req["ReqType"] = Requests::Order;
@@ -24,4 +16,10 @@ std::string MakeOrderProcessor::process(tcp::socket& s){
         std::cerr << ex.what() << std::endl;
         return "null";
     }
+}
+
+void ForGuiOrderProcessor::setVolPriceDir(std::string vol_, std::string price_, std::string dir_){
+    vol = vol_;
+    price = price_;
+    dir = dir_;
 }

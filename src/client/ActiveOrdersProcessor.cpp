@@ -13,7 +13,7 @@ std::string ActiveOrdersProcessor::process(tcp::socket& s){
     
         std::string reply;
         for (auto& [id, vol, price, dir] : idVolPriceDir){
-            reply += "USD: " + vol + " Price: " + price + " " + dir + "\n";
+            reply += "Id: " + id + " USD: " + vol + " Price: " + price + " " + dir + "\n";
         }
         
         return std::move(reply);
