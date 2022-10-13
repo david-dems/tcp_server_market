@@ -48,25 +48,43 @@ std::string Authorizator::waitForAuth(){
             if (id == "null"){
                 QMessageBox msgBox;
                 msgBox.setWindowTitle("Error");
-                msgBox.setText("Error occured. \n Invalid login and password!");
+                msgBox.setText("Error occured. \nInvalid login and password!");
                 msgBox.exec();
             }
             break;
         }
         case Flags::Registration:{
             regDialog = new RegistrationDialog;
-            auto status = regDialog->exec();
+            if (regDialog->exec() != QDialog::Accepted){
+                delete regDialog;
+                break;
+            }
+
             auto [firstName, lastName, login, password] = regDialog->getFLLP();
+            if (
+                firstName.size() == 0,
+                lastName.size() == 0,
+                login.size() == 0,
+                password.size() == 0
+            ){
+                QMessageBox msgBox;
+                msgBox.setWindowTitle("Error");
+                msgBox.setText("Error occured. \nFields cannot be empty!");
+                msgBox.exec(); 
+                delete regDialog;
+                break;
+            }
+
             auto proc = factory->makeProcessor("registration");
             static_cast<ForGuiRegistrationProcessor*>(proc)->setFLLP(firstName, lastName, login, password);
             auto reply = proc->process(*sock);
             delete proc;
             delete regDialog;
             id = reply;
-            if (id == "null" && status != QDialog::Rejected){
+            if (id == "null"){
                 QMessageBox msgBox;
                 msgBox.setWindowTitle("Error");
-                msgBox.setText("Error occured. \n Unavailable login!");
+                msgBox.setText("Error occured. \nUnavailable login!");
                 msgBox.exec();
             }
             break;
