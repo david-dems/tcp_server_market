@@ -33,12 +33,12 @@ find_package(Qt5 COMPONENTS Widgets Gui REQUIRED)
 qt5_wrap_cpp(MOC_HEADERS ${MOC_SOURCE})
 qt5_wrap_ui(UI_HEADERS ${UI_SOURCE})
 
-add_executable(Client ${MOC_HEADERS} ${UI_HEADERS})
+add_executable(GUI_client ${MOC_HEADERS} ${UI_HEADERS})
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 FIND_PACKAGE(Boost 1.40 COMPONENTS system REQUIRED)
 find_package(Threads REQUIRED)
 
-target_link_libraries(Client PRIVATE Qt5::Widgets Qt5::Gui)
-target_link_libraries(Client PRIVATE Threads::Threads ${Boost_LIBRARIES})
+target_link_libraries(GUI_client PRIVATE Qt5::Widgets Qt5::Gui)
+target_link_libraries(GUI_client PRIVATE Threads::Threads ${Boost_LIBRARIES})

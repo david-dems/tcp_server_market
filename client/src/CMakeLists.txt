@@ -10,4 +10,4 @@ set(SOURCE
     ${CMAKE_CURRENT_SOURCE_DIR}/Authorizator.cpp
 )
 
-target_sources(Client PUBLIC ${SOURCE})
+target_sources(GUI_client PUBLIC ${SOURCE})
