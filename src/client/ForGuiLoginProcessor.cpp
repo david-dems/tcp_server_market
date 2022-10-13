@@ -10,7 +10,6 @@ std::string ForGuiLoginProcessor::process(tcp::socket& s){
         SendMessage(s, j);
         auto rep = ReadMessage(s);
         if (rep["Status"].get<std::string>() == "ok"){
-            std::cout << rep["Message"].get<std::string>() << std::endl;
             return rep["UserId"].get<std::string>();
         }
         return std::move(rep["UserId"].get<std::string>());

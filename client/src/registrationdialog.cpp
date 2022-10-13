@@ -21,10 +21,6 @@ void RegistrationDialog::onSignIn(){
 }
 
 void RegistrationDialog::onOk(){
-    qDebug() << ui->firstName->text();
-    qDebug() << ui->lastName->text();
-    qDebug() << ui->login->text();
-    qDebug() << ui->password->text();
     emit done(QDialog::Accepted);
 }
 

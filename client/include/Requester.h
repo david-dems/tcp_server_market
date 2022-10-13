@@ -6,7 +6,6 @@
 
 #include <string>
 #include <vector>
-#include <map>
 #include <boost/asio.hpp>
 #include <exception>
 #include <regex>
@@ -26,23 +25,20 @@ public:
 
     void setUserId(std::string id);
     void setSocket(boost::shared_ptr<boost::asio::ip::tcp::socket> socket);
-    std::vector<std::string> *upds;
-
     void setMutex(QMutex* mutex_);    
     
-    static const int Success = 1;    
+    std::vector<std::string> *upds;
 signals:
     void updated(int);
 private:
     void Run();
     void run();    
+
     boost::shared_ptr<boost::asio::ip::tcp::socket> sock;
     EventProcessorFactory *main_factory;
     std::string userid;
     QMutex *mutex;
 public slots:
     void onDelete(int appid);
-    void onPublish(int vol, int price, int dir);
-
-
+    void onPublish(double vol, double price, int dir);
 };

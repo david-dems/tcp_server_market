@@ -22,7 +22,6 @@ int main(int argc, char *argv[])
     boost::shared_ptr<boost::asio::ip::tcp::socket> sock (new boost::asio::ip::tcp::socket(io_service));
     sock->connect(*iterator);
 
-    std::vector<std::string> upds;
 
     QApplication a(argc, argv);
 
@@ -32,6 +31,9 @@ int main(int argc, char *argv[])
 
     a.setStyleSheet(styleSheet);
     
+    //Authorization here
+    //If user close window or reject login dialog
+    //Auth will call exit(0)
     Authorizator Auth;
     Auth.setSocket(sock);
     auto id = Auth.authorize();
@@ -46,19 +48,24 @@ int main(int argc, char *argv[])
 
     MainWindow w;
     w.setMutex(&mutex);
-    QObject::connect(&r, &Requester::updated, &w, &MainWindow::onUpdate);
-    QObject::connect(&w, &MainWindow::deleteSignal, &r, &Requester::onDelete);
-    QObject::connect(&w, &MainWindow::publishSignal, &r, &Requester::onPublish);
+    QObject::connect(&r, &Requester::updated, &w, &MainWindow::onUpdate); // connect main window updates to requester
+    QObject::connect(&w, &MainWindow::deleteSignal, &r, &Requester::onDelete); //connect deletions requests
+    QObject::connect(&w, &MainWindow::publishSignal, &r, &Requester::onPublish); //connect publish orders requests
 
+
+    //upds --- shared memory, that contains updates from requester
+    //requester make requests to to server to update userinfo
+    //upds protected by mutex
+    std::vector<std::string> upds;
     w.upds = &upds;
     r.upds = &upds;
     r.start();
 
     w.show();
-    a.exec();
+    auto res = a.exec();
     
     r.terminate();
     r.wait();
     
-    return 0;
+    return res;
 }

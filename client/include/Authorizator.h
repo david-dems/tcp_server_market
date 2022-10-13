@@ -14,13 +14,14 @@ class Authorizator : public QObject{
 public:
     Authorizator();
     ~Authorizator();
+
     std::string authorize();
     void setSocket(boost::shared_ptr<boost::asio::ip::tcp::socket> socket);
 private:
     std::string waitForAuth();
     LogInDialog *logDialog;
     RegistrationDialog *regDialog;
-    boost::shared_ptr<boost::asio::ip::tcp::socket> sock;
 
+    boost::shared_ptr<boost::asio::ip::tcp::socket> sock;
     EventProcessorFactory *factory;
 };

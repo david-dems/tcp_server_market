@@ -4,4 +4,5 @@ namespace Flags{
     static const int sale = 0;
     static const int purchase = 1;
     static const int Registration = 200;
+    static const int Success = 10;
 };

@@ -44,7 +44,7 @@
     </font>
    </property>
    <property name="text">
-    <string>Type Id of order, ypu want to delete below</string>
+    <string>Type Id of order, you want to delete below</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_3">

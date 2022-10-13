@@ -1,21 +1,16 @@
 #include "Requester.h"
 #include <QDebug>
-#include <QBuffer>
-#include <QByteArray>
-#include <QStringList>
-#include <QDataStream>
+#include <QMessageBox>
 
 #include "Common.hpp"
 #include "json.hpp"
+#include "commonflags.h"
 
-#include "ExitProcessor.h"
-#include "MakeOrderProcessor.h"
 #include "HelloProcessor.h"
 #include "ActiveOrdersProcessor.h"
 #include "BalanceProcessor.h"
 #include "HistoryProcessor.h"
 #include "DealsProcessor.h"
-#include "DeleteProcessor.h"
 #include "QuotationProcessor.h"
 #include "ForGuiDeleteProcessor.h"
 #include "ForGuiOrderProcessor.h"
@@ -33,7 +28,7 @@ void Requester::Run(){
         delete proc; 
     }
 
-    emit updated(Requester::Success);
+    emit updated(Flags::Success);
 }
 
 void Requester::run(){
@@ -70,20 +65,30 @@ void Requester::setSocket(boost::shared_ptr<boost::asio::ip::tcp::socket> socket
 }
 
 void Requester::onDelete(int appid){
-    QMutexLocker locker(mutex);
     Processor *proc = main_factory->makeProcessor("delete");
     proc->setId(userid);
     static_cast<ForGuiDeleteProcessor*>(proc)->setAppId(appid);
     auto resp = proc->process(*sock);
+    if (resp != "Deleted successfully"){
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Error");
+        msgBox.setText("Error occured. \n Check Id!");
+        msgBox.exec();
+    }
 }
 
 void Requester::setMutex(QMutex* mutex_){
     mutex = mutex_;
 }
 
-void Requester::onPublish(int vol, int price, int dir){
-    if (vol == 0 || price == 0)
+void Requester::onPublish(double vol, double price, int dir){
+    if (vol == 0 || price == 0){
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Error");
+        msgBox.setText("USD and Price cannot be 0\n and should contain only digits!");
+        msgBox.exec();
         return; 
+    }
     Processor *proc = main_factory->makeProcessor("order");
     proc->setId(userid);
     static_cast<ForGuiOrderProcessor*>(proc)->setVolPriceDir(

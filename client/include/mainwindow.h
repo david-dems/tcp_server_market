@@ -6,7 +6,6 @@
 #include "registrationdialog.h"
 #include "deletedialog.h"
 #include <string>
-#include <QSharedMemory>
 #include <QGraphicsScene>
 #include <QMutexLocker>
 #include <QMutex> 
@@ -37,14 +36,13 @@ private:
 
     QMutex *mutex;
 
-
 public slots:
     void onDelete();
     void onUpdate(int val);
     void onPublish();
 signals:
     void deleteSignal(int);
-    void publishSignal(int, int, int);
+    void publishSignal(double, double, int);
 
 };
 #endif // MAINWINDOW_H

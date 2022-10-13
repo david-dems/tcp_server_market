@@ -16,7 +16,6 @@ std::string ForGuiRegistrationProcessor::process(tcp::socket& s){
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << std::endl;
         return "null";
     }
     

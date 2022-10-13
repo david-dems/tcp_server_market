@@ -123,8 +123,10 @@ std::vector<deal> MatchingEngine::processDeals(std::vector<order> sales, std::ve
                 continue;
             } 
         }
+        
 
 
+        if(it_sales->status == "active" && it_purch->status == "active"){
         if (it_sales->price <= it_purch->price){
             deal d;
             if (it_sales->vol > it_purch->vol){
@@ -197,6 +199,7 @@ std::vector<deal> MatchingEngine::processDeals(std::vector<order> sales, std::ve
                 it_sales++;
                 continue;
             }
+        }
         }
         
         if (it_sales->status != "active" && it_purch->status != "active"){

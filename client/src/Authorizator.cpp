@@ -3,10 +3,10 @@
 #include "EventProcessorFactory.h"
 #include "ForGuiLoginProcessor.h"
 #include "ForGuiRegistrationProcessor.h"
-#include "RegistrationProcessor.h"
 
 #include "commonflags.h"
 #include <tuple>
+#include <QMessageBox>
 
 
 Authorizator::Authorizator(){
@@ -45,11 +45,17 @@ std::string Authorizator::waitForAuth(){
             auto reply = proc->process(*sock);
             delete proc;
             id = reply;
+            if (id == "null"){
+                QMessageBox msgBox;
+                msgBox.setWindowTitle("Error");
+                msgBox.setText("Error occured. \n Invalid login and password!");
+                msgBox.exec();
+            }
             break;
         }
         case Flags::Registration:{
             regDialog = new RegistrationDialog;
-            regDialog->exec();
+            auto status = regDialog->exec();
             auto [firstName, lastName, login, password] = regDialog->getFLLP();
             auto proc = factory->makeProcessor("registration");
             static_cast<ForGuiRegistrationProcessor*>(proc)->setFLLP(firstName, lastName, login, password);
@@ -57,6 +63,12 @@ std::string Authorizator::waitForAuth(){
             delete proc;
             delete regDialog;
             id = reply;
+            if (id == "null" && status != QDialog::Rejected){
+                QMessageBox msgBox;
+                msgBox.setWindowTitle("Error");
+                msgBox.setText("Error occured. \n Unavailable login!");
+                msgBox.exec();
+            }
             break;
         }
         default:
