@@ -3,6 +3,7 @@
 std::string MakeOrderProcessor::process(tcp::socket& s){
     std::string vol, price, dir;
 
+    std::cout << "Enter vol, price, direction" << std::endl;
     std::cin >> vol >> price >> dir;
 
     if (dir != "purchase" && dir != "sale"){
